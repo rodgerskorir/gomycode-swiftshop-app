@@ -236,7 +236,7 @@ npm run dev
 
 ---
 
-## 🗓️ Project Timeline (14-Day Plan)
+## 🗓️ Project Timeline (10-Day Plan)
 
 | Day | Task                                          |
 | --- | --------------------------------------------- |
