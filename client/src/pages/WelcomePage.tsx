@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 
@@ -67,6 +67,9 @@ export default function WelcomePage() {
             </li>
             <li>
               <Link to="/contact" className="hover:text-blue-300 transition">Contact</Link>
+            </li>
+            <li>
+              <Link to="/about" className="hover:text-blue-300 transition">About US</Link>
             </li>
           </ul>
         </nav>
