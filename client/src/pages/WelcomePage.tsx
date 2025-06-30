@@ -80,7 +80,9 @@ export default function WelcomePage() {
             transition={{ duration: 1 }}
           >
             <h1 className="text-5xl font-extrabold">
-              Welcome to <span className="text-blue-300">SwiftShop</span>
+              Welcome to <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-indigo-600 bg-clip-text text-transparent">
+  SwiftShop
+</span>
             </h1>
             <p className="text-lg text-gray-200 mt-4">
               Step into style. Discover the latest in footwear fashion and shop with confidence.
