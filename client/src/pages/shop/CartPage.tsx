@@ -1,4 +1,4 @@
-// src/pages/CartPage.tsx
+
 import { useContext } from "react";
 import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
@@ -51,7 +51,7 @@ export default function CartPage() {
               <ul className="divide-y divide-gray-200">
                 {cart.map((item) => (
                   <li
-                    key={`${item.id}-${item.selectedSize}-${item.selectedColor}`}
+                    key={`${item.id}-${item.selectedSize}`}
                     className="py-6 flex"
                   >
                     <div className="flex-shrink-0 w-24 h-24 border border-gray-200 rounded-md overflow-hidden">
@@ -79,15 +79,7 @@ export default function CartPage() {
                           {item.selectedSize && (
                             <p>Size: {item.selectedSize}</p>
                           )}
-                          {item.selectedColor && (
-                            <div className="flex items-center gap-1">
-                              <span>Color:</span>
-                              <span
-                                className="inline-block w-4 h-4 rounded-full border"
-                                style={{ backgroundColor: item.selectedColor }}
-                              />
-                            </div>
-                          )}
+                          
                         </div>
                       </div>
 
@@ -99,8 +91,7 @@ export default function CartPage() {
                               updateQuantity(
                                 item.id,
                                 item.quantity - 1,
-                                item.selectedSize,
-                                item.selectedColor
+                                item.selectedSize
                               )
                             }
                             disabled={item.quantity <= 1}
@@ -122,8 +113,7 @@ export default function CartPage() {
                               updateQuantity(
                                 item.id,
                                 item.quantity + 1,
-                                item.selectedSize,
-                                item.selectedColor
+                                item.selectedSize
                               )
                             }
                             className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
@@ -137,8 +127,7 @@ export default function CartPage() {
                           onClick={() =>
                             removeFromCart(
                               item.id,
-                              item.selectedSize,
-                              item.selectedColor
+                              item.selectedSize
                             )
                           }
                           className="flex items-center text-sm font-medium text-red-600 hover:text-red-500 transition-colors"

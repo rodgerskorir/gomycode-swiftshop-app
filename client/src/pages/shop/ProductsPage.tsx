@@ -1,4 +1,4 @@
-// src/pages/products/ProductsPage.tsx
+
 
 import { useState, useEffect } from "react";
 import ProductCard from "../../components/shop/ProductCard";

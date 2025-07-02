@@ -1,4 +1,3 @@
-// src/pages/products/ProductDetailPage.tsx
 import { useParams } from "react-router-dom";
 import { useContext, useState } from "react";
 import { CartContext } from "../../components/cart/CartContext";
@@ -7,8 +6,8 @@ import { ShoppingCart } from "lucide-react";
 import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
 
-
 import { productData } from "../../data/products";
+import SimilarProductCard from "../../components/shop/SimilarProductCard";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -16,7 +15,6 @@ export default function ProductDetailPage() {
   const { cart, addToCart } = useContext(CartContext);
 
   const [selectedSize, setSelectedSize] = useState("");
-  const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || "");
 
   if (!product) {
     return <p className="text-center py-10">Product not found</p>;
@@ -27,8 +25,13 @@ export default function ProductDetailPage() {
     : product.price;
 
   const handleAddToCart = () => {
-    if (!selectedSize || !selectedColor) {
-      toast.error("Please select size and color");
+    if (!selectedSize) {
+      toast.error("Please select a size and color");
+      return;
+    }
+
+    if (!selectedSize) {
+      toast.error("Please select the Sneaker size");
       return;
     }
 
@@ -40,9 +43,7 @@ export default function ProductDetailPage() {
       price: discountedPrice,
       image: product.image,
       selectedSize,
-      selectedColor,
-      sizes: product.sizes,   
-  colors: product.colors,
+      sizes: product.sizes,
     });
 
     toast.success(`${product.name} added to cart`);
@@ -70,14 +71,21 @@ export default function ProductDetailPage() {
         {/* Images */}
         <div className="space-y-4">
           {product.image.map((img, i) => (
-            <img key={i} src={img} alt={product.name} className="w-full rounded-lg" />
+            <img
+              key={i}
+              src={img}
+              alt={product.name}
+              className="w-full rounded-lg"
+            />
           ))}
         </div>
 
         {/* Product Info */}
         <div className="space-y-4">
           <h2 className="text-3xl font-bold">{product.name}</h2>
-          <p className="text-gray-500">{product.brand} • {product.category}</p>
+          <p className="text-gray-500">
+            {product.brand} • {product.category}
+          </p>
 
           {/* Price */}
           <div className="flex items-center gap-4">
@@ -109,23 +117,6 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Color Selection */}
-          <div>
-            <label className="font-medium">Color:</label>
-            <div className="flex gap-2 mt-2">
-              {product.colors.map((color, i) => (
-                <button
-                  key={i}
-                  onClick={() => setSelectedColor(color)}
-                  className={`w-8 h-8 rounded-full border-2 ${
-                    selectedColor === color ? "border-black" : "border-gray-300"
-                  }`}
-                  style={{ backgroundColor: color }}
-                />
-              ))}
-            </div>
-          </div>
-
           {/* Add to Cart */}
           <button
             onClick={handleAddToCart}
@@ -137,24 +128,24 @@ export default function ProductDetailPage() {
       </main>
 
       {/* Similar Products */}
+
       <section className="max-w-6xl mx-auto px-6 pb-12">
-        <h3 className="text-xl font-semibold mb-4">Similar Products</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {productData
-            .filter((p) => p.category === product.category && p.id !== product.id)
-            .map((similar) => (
-              <div key={similar.id} className="border rounded-lg p-3 text-sm">
-                <img
-                  src={similar.image[0]}
-                  alt={similar.name}
-                  className="w-full h-32 object-cover rounded"
-                />
-                <p className="mt-2 font-medium">{similar.name}</p>
-                <p className="text-blue-500 font-bold">Ksh {similar.price}</p>
-              </div>
-            ))}
-        </div>
-      </section>
+  <h3 className="text-xl font-semibold mb-4">Similar Products</h3>
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    {productData
+      .filter(
+        (p) =>
+          p.category === product.category ||
+          p.brand === product.brand &&
+          p.id !== product.id
+      )
+      .slice(0, 4) // 🔹 Limit to 4 results
+      .map((similar) => (
+        <SimilarProductCard key={similar.id} product={similar} />
+      ))}
+  </div>
+</section>
+
 
       <Footer />
     </div>

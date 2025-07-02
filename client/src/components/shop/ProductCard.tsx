@@ -1,4 +1,4 @@
-// src/components/shop/ProductCard.tsx
+
 
 import { Link } from "react-router-dom";
 import type { Product } from "../../types/Product";

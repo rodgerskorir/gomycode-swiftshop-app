@@ -7,13 +7,10 @@ export interface Product {
   image: string[];
   discount?: number;
   sizes: string[];
-  colors: string[];
-   selectedSize?: string;
-  selectedColor?: string;
+  selectedSize?: string;
 }
 
 export interface CartItem extends Product {
   selectedSize?: string;
-  selectedColor?: string;
   quantity: number;
 }

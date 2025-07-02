@@ -1,4 +1,4 @@
-// src/components/cart/CartContext.tsx
+
 
 import { createContext, useState, type ReactNode } from "react";
 import type { Product, CartItem } from "../../types/Product";
@@ -11,14 +11,14 @@ interface CartContextType {
   addToCart: (product: Product) => void;
   removeFromCart: (
     productId: number,
-    selectedSize?: string,
-    selectedColor?: string
+    selectedSize?: string
+    
   ) => void;
   updateQuantity: (
     productId: number,
     newQuantity: number,
-    selectedSize?: string,
-    selectedColor?: string
+    selectedSize?: string
+  
   ) => void;
   cartCount: number;
 }
@@ -42,15 +42,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const existingItem = prev.find(
         (item) =>
           item.id === product.id &&
-          item.selectedSize === product.selectedSize &&
-          item.selectedColor === product.selectedColor
+          item.selectedSize === product.selectedSize
+          
       );
 
       if (existingItem) {
         return prev.map((item) =>
           item.id === product.id &&
-          item.selectedSize === product.selectedSize &&
-          item.selectedColor === product.selectedColor
+          item.selectedSize === product.selectedSize 
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -71,8 +70,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         (item) =>
           !(
             item.id === productId &&
-            item.selectedSize === selectedSize &&
-            item.selectedColor === selectedColor
+            item.selectedSize === selectedSize 
+          
           )
       )
     );
@@ -93,8 +92,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCart((prev) =>
       prev.map((item) =>
         item.id === productId &&
-        item.selectedSize === selectedSize &&
-        item.selectedColor === selectedColor
+        item.selectedSize === selectedSize 
           ? { ...item, quantity: newQuantity }
           : item
       )
