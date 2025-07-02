@@ -8,8 +8,8 @@ import ContactPage from "./pages/contact/ContactPage";
 import AboutPage from "./pages/contact/AboutUs";
 
 // Auth pages
-import LoginPage from "./pages/auth/LoginPage";
-import RegisterPage from "./pages/auth/RegisterPage";
+
+
 
 // User account pages
 import ProfilePage from "./pages/user/ProfilePage";
@@ -44,8 +44,8 @@ export default function AppRoutes() {
       <Route path="/about" element={<AboutPage />} />
 
       {/* Auth */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      
+   
 
       {/* User */}
       <Route path="/profile" element={<ProfilePage />} />
