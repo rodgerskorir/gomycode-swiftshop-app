@@ -1,25 +1,13 @@
+// src/components/shop/ProductCard.tsx
+
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import type { Product } from "../../types/Product";
 
-interface Product {
-  id: number;
-  name: string;
-  brand: string;
-  category: string;
-  price: number;
-  image: string;
-  discount?: number;
-  isHot?: boolean;
-}
-
-interface Props {
+interface ProductCardProps {
   product: Product;
-  onAddToCart: () => void;
 }
 
-export default function ProductCard({ product, onAddToCart }: Props) {
-  const [hovered, setHovered] = useState(false);
-
+export default function ProductCard({ product }: ProductCardProps) {
   const discountedPrice = product.discount
     ? product.price - (product.price * product.discount) / 100
     : product.price;
@@ -27,56 +15,47 @@ export default function ProductCard({ product, onAddToCart }: Props) {
   return (
     <Link
       to={`/products/${product.id}`}
-      className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden relative"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      className="relative bg-white rounded-xl shadow hover:shadow-lg transition duration-200 overflow-hidden"
     >
-      {/* Badges */}
-      <div className="absolute top-2 left-2 flex gap-2 z-10">
-        {product.isHot && (
-          <span className="bg-red-500 text-white text-xs px-2 py-1 rounded font-bold">HOT</span>
-        )}
-        {product.discount && (
-          <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded font-bold">
-            {product.discount}% OFF
-          </span>
-        )}
-      </div>
+      {/* Discount Badge */}
+      {product.discount && (
+        <span className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded z-10">
+          {product.discount}% OFF
+        </span>
+      )}
 
-      {/* Image */}
-      <img src={product.image} alt={product.name} className="w-full h-48 object-cover" />
+      {/* Product Image */}
+      <img
+        src={product.image[0] || "/assets/images/default.png"}
+        alt={product.name}
+        className="w-full h-48 object-cover object-center"
+      />
 
-      {/* Details */}
+      {/* Product Info */}
       <div className="p-4">
-        <h3 className="text-lg font-semibold mb-1">{product.name}</h3>
-        <p className="text-sm text-gray-500 mb-1">{product.brand}</p>
-        <p className="text-sm text-gray-400 mb-2">{product.category}</p>
+        <h3 className="text-lg font-bold text-gray-900">{product.name}</h3>
+        <p className="text-sm text-gray-500">{product.brand}</p>
+        <p className="text-sm text-gray-400">{product.category}</p>
 
-        {/* Price */}
-        <div className="flex justify-end items-center gap-2">
-          <span className="text-blue-600 font-bold">
+        {/* Price Display */}
+        <div className="mt-2 flex items-center justify-between">
+          <span className="text-blue-600 font-semibold">
             Ksh {discountedPrice.toFixed(2)}
           </span>
           {product.discount && (
-            <span className="text-gray-400 text-sm line-through">
+            <span className="text-sm text-gray-400 line-through">
               Ksh {product.price.toFixed(2)}
             </span>
           )}
         </div>
 
-        {/* Add to Cart */}
-        {hovered && (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onAddToCart();
-            }}
-            className="w-full mt-3 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
-          >
-            Add to Cart
-          </button>
-        )}
+        {/* View Button */}
+        <button
+          onClick={(e) => e.stopPropagation()}
+          className="mt-4 w-full bg-black text-white py-2 px-4 rounded hover:bg-blue-600 transition"
+        >
+          View Item
+        </button>
       </div>
     </Link>
   );

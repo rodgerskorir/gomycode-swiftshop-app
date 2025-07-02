@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 import LoginModal from "../auth/LoginModal";
 import RegisterModal from "../auth/RegisterModal";
+import { CartContext } from "../cart/CartContext";
+
 
 export default function Navbar() {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const { cartCount } = useContext(CartContext);
 
   return (
     <>
@@ -42,9 +45,11 @@ export default function Navbar() {
             </button>
             <Link to="/cart" className="relative hover:text-blue-500">
               <ShoppingCart className="w-5 h-5" />
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                0
-              </span>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center bg-yellow-400">
+                  {cartCount}
+                </span>
+              )}
             </Link>
           </nav>
         </div>
