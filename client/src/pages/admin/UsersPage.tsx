@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Edit, Trash2, UserPlus } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 
