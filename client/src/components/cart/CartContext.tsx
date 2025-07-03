@@ -1,34 +1,27 @@
-
-
 import { createContext, useState, type ReactNode } from "react";
 import type { Product, CartItem } from "../../types/Product";
 
-
-
-// Context type
+// Define context type
 interface CartContextType {
   cart: CartItem[];
   addToCart: (product: Product) => void;
-  removeFromCart: (
-    productId: number,
-    selectedSize?: string
-    
-  ) => void;
+  removeFromCart: (productId: number, selectedSize?: string) => void;
   updateQuantity: (
     productId: number,
     newQuantity: number,
     selectedSize?: string
-  
   ) => void;
+  clearCart: () => void;
   cartCount: number;
 }
 
-// Initial context (placeholder functions)
+// Initial placeholder context
 export const CartContext = createContext<CartContextType>({
   cart: [],
   addToCart: () => {},
   removeFromCart: () => {},
   updateQuantity: () => {},
+  clearCart: () => {},
   cartCount: 0,
 });
 
@@ -36,20 +29,17 @@ export const CartContext = createContext<CartContextType>({
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  // Add product to cart (with size/color variant)
+  // Add to cart
   const addToCart = (product: Product) => {
     setCart((prev) => {
       const existingItem = prev.find(
         (item) =>
-          item.id === product.id &&
-          item.selectedSize === product.selectedSize
-          
+          item.id === product.id && item.selectedSize === product.selectedSize
       );
 
       if (existingItem) {
         return prev.map((item) =>
-          item.id === product.id &&
-          item.selectedSize === product.selectedSize 
+          item.id === product.id && item.selectedSize === product.selectedSize
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -59,53 +49,56 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  // Remove product (specific variant)
+  // Remove from cart
   const removeFromCart = (
     productId: number,
-    selectedSize?: string,
-    selectedColor?: string
+    selectedSize?: string
   ) => {
     setCart((prev) =>
       prev.filter(
-        (item) =>
-          !(
-            item.id === productId &&
-            item.selectedSize === selectedSize 
-          
-          )
+        (item) => !(item.id === productId && item.selectedSize === selectedSize)
       )
     );
   };
 
-  // Update quantity or remove if quantity is < 1
+  // Update item quantity
   const updateQuantity = (
     productId: number,
     newQuantity: number,
-    selectedSize?: string,
-    selectedColor?: string
+    selectedSize?: string
   ) => {
     if (newQuantity < 1) {
-      removeFromCart(productId, selectedSize, selectedColor);
+      removeFromCart(productId, selectedSize);
       return;
     }
 
     setCart((prev) =>
       prev.map((item) =>
-        item.id === productId &&
-        item.selectedSize === selectedSize 
+        item.id === productId && item.selectedSize === selectedSize
           ? { ...item, quantity: newQuantity }
           : item
       )
     );
   };
 
-  // Total count of items in cart
+  // Clear the entire cart
+  const clearCart = () => {
+    setCart([]);
+  };
+
+  // Total item count
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Context provider
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, updateQuantity, cartCount }}
+      value={{
+        cart,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        cartCount,
+      }}
     >
       {children}
     </CartContext.Provider>

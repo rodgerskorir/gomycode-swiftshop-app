@@ -190,9 +190,13 @@ export default function CartPage() {
                   </span>
                 </div>
               </div>
+
+              {/* to include when using mongoDb  /checkout/:cartId */}
+              <Link to="/checkout">
               <button className="mt-6 w-full bg-black text-white rounded-md py-3 px-4 text-base font-medium hover:bg-blue-600 transition">
                 Checkout
               </button>
+              </Link>
               <div className="mt-6 flex justify-center text-sm text-gray-500">
                 <p>
                   or{" "}

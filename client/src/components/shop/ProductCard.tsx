@@ -39,11 +39,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Price Display */}
         <div className="mt-2 flex items-center justify-between">
-          <span className="text-blue-600 font-semibold">
+          <span className="text-black font-bold">
             Ksh {discountedPrice.toFixed(2)}
           </span>
           {product.discount && (
-            <span className="text-sm text-gray-400 line-through">
+            <span className="text-sm text-red-500 line-through">
               Ksh {product.price.toFixed(2)}
             </span>
           )}
