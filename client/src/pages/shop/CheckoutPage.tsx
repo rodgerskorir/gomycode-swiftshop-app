@@ -1,4 +1,3 @@
-// src/pages/CheckoutPage.tsx
 import { useContext, useState } from "react";
 import { CartContext } from "../../components/cart/CartContext";
 import Navbar from "../../components/navbar/Navbar";
@@ -38,7 +37,11 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Simulate order success
+    // //
+    // Payment to added
+
+    
+    // order success
     toast.success("Order placed successfully!");
     clearCart();
     navigate("/order-success"); // Redirect after placing order (or to a thank you page)

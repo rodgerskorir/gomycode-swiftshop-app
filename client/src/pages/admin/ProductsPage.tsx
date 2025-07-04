@@ -1,50 +1,22 @@
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
+import { productData } from "../../data/products"; // adjust path if needed
+import type { Product } from "../../types/Product";
 
-const allBrands = ["All", "Nike", "Adidas", "Puma"];
-const allCategories = ["All", "Sneakers", "Running", "Casual"];
-
-const sampleProducts = [
-  {
-    id: 1,
-    name: "Air Max",
-    brand: "Nike",
-    category: "Sneakers",
-    price: 12000,
-    stock: 10,
-    image: "/assets/products/air-max.png",
-  },
-  {
-    id: 2,
-    name: "Ultraboost",
-    brand: "Adidas",
-    category: "Running",
-    price: 14000,
-    stock: 5,
-    image: "/assets/products/ultraboost.png",
-  },
-  {
-    id: 3,
-    name: "Suede Classic",
-    brand: "Puma",
-    category: "Casual",
-    price: 9500,
-    stock: 8,
-    image: "/assets/products/suede.png",
-  },
-];
+const allBrands = ["Brand-All", "Nike", "Adidas", "Puma"];
+const allCategories = ["Category-All", "Sneakers", "Running", "Casual"];
 
 export default function AdminProductsPage() {
-  const [products, setProducts] = useState(sampleProducts);
-  const [brand, setBrand] = useState("All");
-  const [category, setCategory] = useState("All");
+  const [products, setProducts] = useState<Product[]>(productData);
+  const [brand, setBrand] = useState("Brand-All");
+  const [category, setCategory] = useState("Category-All");
 
   useEffect(() => {
-    const filtered = sampleProducts.filter(
+    const filtered = productData.filter(
       (p) =>
-        (brand === "All" || p.brand === brand) &&
-        (category === "All" || p.category === category)
+        (brand === "Brand-All" || p.brand === brand) &&
+        (category === "Category-All" || p.category === category)
     );
     setProducts(filtered);
   }, [brand, category]);
@@ -57,7 +29,7 @@ export default function AdminProductsPage() {
     <div className="flex min-h-screen">
       <AdminSidebar />
 
-      <main className="flex-1 p-6 bg-gray-100 dark:bg-gray-900">
+      <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
             Products
@@ -69,10 +41,14 @@ export default function AdminProductsPage() {
 
         {/* Filters */}
         <div className="flex flex-wrap gap-4 mb-6">
+          <p className="text-sm text-gray-50 dark:text-gray-50 mb-2">
+            Filter products by brand or category
+          </p>
+
           <select
             value={brand}
             onChange={(e) => setBrand(e.target.value)}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100"
+            className="px-4 py-2 border rounded-md text-sm bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white"
           >
             {allBrands.map((b) => (
               <option key={b}>{b}</option>
@@ -82,7 +58,7 @@ export default function AdminProductsPage() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100"
+            className="px-4 py-2 border rounded-md text-sm bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white"
           >
             {allCategories.map((c) => (
               <option key={c}>{c}</option>
@@ -91,9 +67,9 @@ export default function AdminProductsPage() {
         </div>
 
         {/* Product Table */}
-        <div className="overflow-x-auto rounded-lg shadow border border-gray-200 dark:border-gray-700">
+        <div className="overflow-x-auto rounded-lg shadow border dark:border-gray-700">
           <table className="min-w-full text-sm">
-            <thead className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-200">
+            <thead className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
               <tr>
                 <th className="text-left p-3">Image</th>
                 <th className="text-left p-3">Name</th>
@@ -108,11 +84,11 @@ export default function AdminProductsPage() {
               {products.map((p) => (
                 <tr
                   key={p.id}
-                  className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-100"
+                  className="border-t dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-white"
                 >
                   <td className="p-3">
                     <img
-                      src={p.image}
+                      src={p.image[0]}
                       alt={p.name}
                       className="w-12 h-12 object-cover rounded"
                     />
@@ -121,9 +97,10 @@ export default function AdminProductsPage() {
                   <td className="p-3">{p.brand}</td>
                   <td className="p-3">{p.category}</td>
                   <td className="p-3">Ksh {p.price.toLocaleString()}</td>
-                  <td className="p-3">{p.stock}</td>
+                  <td className="p-3">{p.sizes.length * 5}</td>{" "}
+                  {/* Dummy stock */}
                   <td className="p-3 space-x-2">
-                    <button className="inline-flex items-center justify-center p-2 rounded-md bg-yellow-500 hover:bg-yellow-600 text-white">
+                    <button className="inline-flex items-center justify-center p-2 rounded-md bg-yellow-400 hover:bg-yellow-500 text-white">
                       <Edit size={16} />
                     </button>
                     <button
@@ -135,7 +112,6 @@ export default function AdminProductsPage() {
                   </td>
                 </tr>
               ))}
-
               {products.length === 0 && (
                 <tr>
                   <td

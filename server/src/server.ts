@@ -1,4 +1,4 @@
-const express = require("express");
+import express from "express";
 import { config } from "dotenv";
 import { dbConnect } from "./db/dbConnect";
 import { userRouter } from "./routes/userRoute";

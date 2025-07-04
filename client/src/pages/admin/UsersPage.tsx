@@ -5,24 +5,24 @@ import AdminSidebar from "../../components/admin/AdminSidebar";
 const sampleUsers = [
   {
     id: 1,
-    name: "Jane Doe",
-    email: "jane@example.com",
+    name: "Korir rodgers",
+    email: "korir@gmail.com",
     role: "admin",
-    joined: "2024-01-15",
+    joined: "2025-01-15",
   },
   {
     id: 2,
-    name: "John Smith",
-    email: "john@example.com",
+    name: "Ann key",
+    email: "ann@gmail.com",
     role: "user",
-    joined: "2024-03-12",
+    joined: "2025-03-12",
   },
   {
     id: 3,
     name: "Alice Johnson",
-    email: "alice@example.com",
+    email: "alice@gmail.com",
     role: "user",
-    joined: "2024-05-02",
+    joined: "2025-05-02",
   },
 ];
 

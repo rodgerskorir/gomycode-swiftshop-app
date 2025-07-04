@@ -8,19 +8,19 @@ import Footer from "../../components/footer/Footer";
 import type { Product } from "../../types/Product";
 import { productData } from "../../data/products"; // <-- ✅ Load from shared source
 
-const allBrands = ["All", ...Array.from(new Set(productData.map((p) => p.brand)))];
-const allCategories = ["All", ...Array.from(new Set(productData.map((p) => p.category)))];
+const allBrands = ["Brand-All", ...Array.from(new Set(productData.map((p) => p.brand)))];
+const allCategories = ["Category-All", ...Array.from(new Set(productData.map((p) => p.category)))];
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>(productData);
-  const [brand, setBrand] = useState("All");
-  const [category, setCategory] = useState("All");
+  const [brand, setBrand] = useState("Brand-All");
+  const [category, setCategory] = useState("Category-All");
 
   useEffect(() => {
     const filtered = productData.filter(
       (p) =>
-        (brand === "All" || p.brand === brand) &&
-        (category === "All" || p.category === category)
+        (brand === "Brand-All" || p.brand === brand) &&
+        (category === "Category-All" || p.category === category)
     );
     setProducts(filtered);
   }, [brand, category]);
@@ -34,6 +34,9 @@ export default function ProductsPage() {
 
         {/* Filters */}
         <div className="flex justify-center gap-4 mb-8">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+  Filter products by brand or category
+</p>
           <select
             value={brand}
             onChange={(e) => setBrand(e.target.value)}
