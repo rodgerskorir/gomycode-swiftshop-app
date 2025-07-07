@@ -50,7 +50,7 @@ export default function AppRoutes() {
       {/* User */}
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/my-orders" element={<MyOrdersPage />} />
-      <Route path="/orders/:id" element={<OrderDetailPage />} />
+      <Route path="/my-orders/:id" element={<OrderDetailPage />} />
 
       {/* Admin */}
       <Route path="/admin" element={<AdminDashboard />} />

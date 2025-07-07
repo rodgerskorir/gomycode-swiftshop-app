@@ -1,9 +1,9 @@
 import { useContext, useState } from "react";
 import { CartContext } from "../../components/cart/CartContext";
-import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 
 export default function CheckoutPage() {
   const { cart } = useContext(CartContext);
@@ -49,7 +49,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      <LoggedInNavbar />
 
       <main className="flex-1 max-w-5xl mx-auto px-6 py-10 grid md:grid-cols-2 gap-8">
         {/* Shipping Form */}

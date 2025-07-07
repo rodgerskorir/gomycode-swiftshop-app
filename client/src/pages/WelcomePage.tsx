@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { Link } from "react-router-dom";
 import Navbar from "../components/navbar/Navbar";
 import Footer from "../components/footer/Footer";
-import { Link } from "react-router-dom";
 
 const slides = [
   {
@@ -53,6 +52,8 @@ export default function WelcomePage() {
         />
       </AnimatePresence>
 
+      
+
       <div
         className={`absolute inset-0 bg-gradient-to-br ${current.color} opacity-60 z-10 transition-all duration-1000`}
       ></div>
@@ -60,27 +61,27 @@ export default function WelcomePage() {
       <div className="relative z-20 flex flex-col min-h-screen">
         <Navbar />
 
-        <div className="flex-1 flex items-center justify-center px-6">
+        <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-12">
           <motion.div
-            className="bg-black/10 backdrop-blur-md p-10 rounded-2xl shadow-xl text-white w-full max-w-4xl text-center"
+            className="bg-black/10 backdrop-blur-md p-6 sm:p-10 rounded-2xl shadow-xl text-white w-full max-w-xl sm:max-w-3xl text-center"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
           >
-            <h1 className="text-5xl font-extrabold">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight">
               Welcome to{" "}
               <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-indigo-600 bg-clip-text text-transparent">
                 SwiftShop
               </span>
             </h1>
-            <p className="text-lg text-gray-200 mt-4">
+            <p className="text-base sm:text-lg text-gray-200 mt-4">
               Step into style. Discover the latest in footwear fashion and shop
               with confidence.
             </p>
             <div className="flex justify-center gap-4 mt-6">
               <Link
                 to="/products"
-                className="px-8 py-4 rounded-xl bg-black hover:blue-600 text-white text-lg font-semibold shadow-md transition border border-white"
+                className="px-6 py-3 sm:px-8 sm:py-4 rounded-xl bg-black hover:bg-blue-600 text-white text-base sm:text-lg font-semibold shadow-md transition border border-white"
               >
                 Start Shopping Now!
               </Link>

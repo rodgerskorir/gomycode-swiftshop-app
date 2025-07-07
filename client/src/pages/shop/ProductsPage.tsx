@@ -1,15 +1,18 @@
-
-
 import { useState, useEffect } from "react";
 import ProductCard from "../../components/shop/ProductCard";
 import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
-
 import type { Product } from "../../types/Product";
-import { productData } from "../../data/products"; // <-- ✅ Load from shared source
+import { productData } from "../../data/products";
 
-const allBrands = ["Brand-All", ...Array.from(new Set(productData.map((p) => p.brand)))];
-const allCategories = ["Category-All", ...Array.from(new Set(productData.map((p) => p.category)))];
+const allBrands = [
+  "Brand-All",
+  ...Array.from(new Set(productData.map((p) => p.brand))),
+];
+const allCategories = [
+  "Category-All",
+  ...Array.from(new Set(productData.map((p) => p.category))),
+];
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>(productData);
@@ -26,21 +29,23 @@ export default function ProductsPage() {
   }, [brand, category]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar />
 
-      <div className="p-6">
-        <h1 className="text-3xl font-bold mb-6 text-center">Shop Sneakers</h1>
+      <main className="flex-1 px-4 sm:px-6 py-8">
+        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
+          Shop Sneakers
+        </h1>
 
         {/* Filters */}
-        <div className="flex justify-center gap-4 mb-8">
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-  Filter products by brand or category
-</p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 mb-10 text-sm">
+          <p className="text-gray-500 text-center sm:text-left">
+            Filter products by brand or category
+          </p>
           <select
             value={brand}
             onChange={(e) => setBrand(e.target.value)}
-            className="px-4 py-2 border rounded-md"
+            className="px-4 py-2 border rounded-md bg-white"
           >
             {allBrands.map((b) => (
               <option key={b} value={b}>
@@ -48,10 +53,11 @@ export default function ProductsPage() {
               </option>
             ))}
           </select>
+
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="px-4 py-2 border rounded-md"
+            className="px-4 py-2 border rounded-md bg-white"
           >
             {allCategories.map((c) => (
               <option key={c} value={c}>
@@ -65,7 +71,10 @@ export default function ProductsPage() {
         {products.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product) => (
-              <ProductCard key={`${product.id}-${product.name}`} product={product} />
+              <ProductCard
+                key={`${product.id}-${product.name}`}
+                product={product}
+              />
             ))}
           </div>
         ) : (
@@ -74,7 +83,7 @@ export default function ProductsPage() {
               <img
                 src="/assets/images/empty-state.png"
                 alt="No products found"
-                className="w-48 h-48 mx-auto mb-4"
+                className="w-40 h-40 mx-auto mb-4 object-contain"
               />
               <p className="text-lg text-gray-600 mb-2">
                 No products match your filters
@@ -84,8 +93,8 @@ export default function ProductsPage() {
               </p>
               <button
                 onClick={() => {
-                  setBrand("All");
-                  setCategory("All");
+                  setBrand("Brand-All");
+                  setCategory("Category-All");
                 }}
                 className="mt-4 px-4 py-2 bg-black hover:bg-blue-600 text-white rounded-md transition-colors"
               >
@@ -94,7 +103,7 @@ export default function ProductsPage() {
             </div>
           </div>
         )}
-      </div>
+      </main>
 
       <Footer />
     </div>

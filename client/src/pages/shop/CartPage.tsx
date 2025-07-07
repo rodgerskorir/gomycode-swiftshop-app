@@ -1,16 +1,17 @@
 
 import { useContext } from "react";
-import Navbar from "../../components/navbar/Navbar";
+
 import Footer from "../../components/footer/Footer";
 import { CartContext } from "../../components/cart/CartContext";
 import { Link } from "react-router-dom";
+import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 
 export default function CartPage() {
   const { cart, updateQuantity, removeFromCart } = useContext(CartContext);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navbar />
+      <LoggedInNavbar />
       <main className="flex-1 p-6 max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Your Shopping Cart</h1>
 

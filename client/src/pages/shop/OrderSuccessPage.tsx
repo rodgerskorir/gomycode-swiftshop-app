@@ -1,14 +1,14 @@
-// src/pages/checkout/OrderSuccessPage.tsx
+
 
 import { Link } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
-import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
+import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 
 export default function OrderSuccessPage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      <LoggedInNavbar />
 
       <main className="flex-1 flex items-center justify-center p-6 bg-gray-50">
         <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center">

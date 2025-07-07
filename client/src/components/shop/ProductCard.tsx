@@ -1,22 +1,27 @@
-
-
 import { Link } from "react-router-dom";
+import { useContext } from "react";
 import type { Product } from "../../types/Product";
+import { ShoppingCart } from "lucide-react";
+import { CartContext } from "../../components/cart/CartContext";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const { addToCart } = useContext(CartContext);
+
   const discountedPrice = product.discount
     ? product.price - (product.price * product.discount) / 100
     : product.price;
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent default Link behavior
+    addToCart({ ...product, selectedSize: product.sizes?.[0] || "Default" });
+  };
+
   return (
-    <Link
-      to={`/products/${product.id}`}
-      className="relative bg-white rounded-xl shadow hover:shadow-lg transition duration-200 overflow-hidden"
-    >
+    <div className="relative bg-white rounded-xl shadow hover:shadow-lg transition duration-200 overflow-hidden">
       {/* Discount Badge */}
       {product.discount && (
         <span className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded z-10">
@@ -24,20 +29,24 @@ export default function ProductCard({ product }: ProductCardProps) {
         </span>
       )}
 
-      {/* Product Image */}
-      <img
-        src={product.image[0] || "/assets/images/default.png"}
-        alt={product.name}
-        className="w-full h-48 object-cover object-center"
-      />
+      <Link to={`/products/${product.id}`}>
+        <img
+          src={product.image[0] || "/assets/images/default.png"}
+          alt={product.name}
+          className="w-full h-48 object-cover object-center"
+        />
+      </Link>
 
-      {/* Product Info */}
       <div className="p-4">
-        <h3 className="text-lg font-bold text-gray-900">{product.name}</h3>
+        <Link to={`/products/${product.id}`}>
+          <h3 className="text-lg font-bold text-gray-900 hover:text-blue-600">
+            {product.name}
+          </h3>
+        </Link>
         <p className="text-sm text-gray-500">{product.brand}</p>
         <p className="text-sm text-gray-400">{product.category}</p>
 
-        {/* Price Display */}
+        {/* Price */}
         <div className="mt-2 flex items-center justify-between">
           <span className="text-black font-bold">
             Ksh {discountedPrice.toFixed(2)}
@@ -49,14 +58,22 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
 
-        {/* View Button */}
-        <button
-          onClick={(e) => e.stopPropagation()}
-          className="mt-4 w-full bg-black text-white py-2 px-4 rounded hover:bg-blue-600 transition"
-        >
-          View Item
-        </button>
+        {/* Buttons */}
+        <div className="mt-4 flex justify-between items-center gap-2">
+          <Link
+            to={`/products/${product.id}`}
+            className="flex-1 bg-black text-white py-2 px-4 rounded hover:bg-blue-600 transition text-sm text-center"
+          >
+            View Item
+          </Link>
+          <button
+            onClick={handleAddToCart}
+            className="p-2 rounded bg-yellow-500 text-white hover:bg-blue-600 transition"
+          >
+            <ShoppingCart className="w-4 h-4" />
+          </button>
+        </div>
       </div>
-    </Link>
+    </div>
   );
 }
