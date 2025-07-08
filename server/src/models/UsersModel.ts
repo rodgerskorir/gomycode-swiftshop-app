@@ -1,4 +1,3 @@
-
 import mongoose, { Schema } from "mongoose";
 
 export interface User {
@@ -6,7 +5,7 @@ export interface User {
   email: string;
   password: string;
   username: string;
-  phone: number;
+  phone: string;
 }
 
 const userSchema = new Schema<User>({
@@ -14,8 +13,8 @@ const userSchema = new Schema<User>({
   email: { type: String, required: true, unique: true, lowercase: true },
   username: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true },
-  phone: { type: Number, required: false, unique: true },
+  phone: { type: String, required: false, unique: true },
 });
 
-export const UsersModel =
-  mongoose.models.UsersModel || mongoose.model("UsersModel", userSchema);
+export const Users =
+  mongoose.models.Users || mongoose.model("Users", userSchema);

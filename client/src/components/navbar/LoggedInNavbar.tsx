@@ -56,7 +56,7 @@ export default function LoggedInNavbar() {
               className="w-9 h-9 rounded-full border overflow-hidden"
             >
               <img
-                src="/assets/avatar.png"
+                src="/assets/shoe-blue1.png"
                 alt="User Avatar"
                 className="w-full h-full object-cover"
               />

@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 
 interface Props {
@@ -6,6 +7,41 @@ interface Props {
 }
 
 export default function LoginModal({ onClose, onSwitch }: Props) {
+  const [identifier, setIdentifier] = useState(""); // can be email or username
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const isEmail = identifier.includes("@");
+    const payload = {
+      password,
+      ...(isEmail ? { email: identifier } : { username: identifier }),
+    };
+
+    try {
+      const res = await fetch("http://localhost:5000/swiftshop/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Login failed");
+        return;
+      }
+
+      setError("");
+      console.log("✅ Login success:", data);
+      onClose();
+    } catch (err) {
+      setError("Something went wrong. Try again.");
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <motion.div
@@ -20,15 +56,20 @@ export default function LoginModal({ onClose, onSwitch }: Props) {
         >
           ✕
         </button>
-        <h2 className="text-2xl font-bold mb-4 text-center text-black">
-          Login
-        </h2>
-        <form className="space-y-4">
+        <h2 className="text-2xl font-bold mb-4 text-center text-black">Login</h2>
+
+        {error && (
+          <p className="text-red-500 text-sm text-center mb-2">{error}</p>
+        )}
+
+        <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm mb-1">Email</label>
+            <label className="block text-sm mb-1">Email or Username</label>
             <input
-              type="email"
+              type="text"
               className="w-full px-4 py-2 rounded-md bg-gray-100"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               required
             />
           </div>
@@ -37,10 +78,15 @@ export default function LoginModal({ onClose, onSwitch }: Props) {
             <input
               type="password"
               className="w-full px-4 py-2 rounded-md bg-gray-100"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
-          <button className="w-full bg-black text-white py-2 rounded-md hover:bg-blue-700">
+          <button
+            type="submit"
+            className="w-full bg-black text-white py-2 rounded-md hover:bg-blue-700"
+          >
             Log In
           </button>
         </form>

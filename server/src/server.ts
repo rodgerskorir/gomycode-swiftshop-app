@@ -1,19 +1,37 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import { config } from "dotenv";
+import cors from "cors";
 import { dbConnect } from "./db/dbConnect";
 import { userRouter } from "./routes/userRoute";
 
+
+// Load .env variables
 config();
 
+// Initialize app
+const app = express();
 const PORT = process.env.PORT || 5000;
 
-const app = express();
-
+// Middleware
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+// Connect to database
 dbConnect();
 
-//users
-app.use("/users", userRouter);
+// Routes
+app.get("/", (req: Request, res: Response) => {
+  res.json({ message: "Welcome to backend" });
+});
 
-app.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`));
+// Register user routes (e.g., /swiftshop/users/register, /swiftshop/users/login)
+app.use("/swiftshop/users", userRouter);
+
+// Catch-all route for invalid paths
+app.use((req: Request, res: Response) => {
+  res.status(404).json({ error: "Invalid path" });
+});
+
+// Start server
+app.listen(PORT, () => console.log(`✅ App is running on PORT ${PORT}`));
