@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useContext } from "react";
 import type { Product } from "../../types/Product";
 import { ShoppingCart } from "lucide-react";
-import { CartContext } from "../../components/cart/CartContext";
+import { CartContext } from "../cart/CartContext";
 
 interface ProductCardProps {
   product: Product;

@@ -1,12 +1,16 @@
 import { Mail, MapPin, Phone, Facebook, Instagram, Twitter } from "lucide-react";
 import Navbar from "../../components/navbar/Navbar";
+import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 import Footer from "../../components/footer/Footer";
-
+import { useAuth } from "../../context/AuthContext"; // ✅ Use auth context
 
 export default function ContactPage() {
+  const { user } = useAuth(); // ✅ Get reactive user
+
   return (
     <>
-      <Navbar />
+      {user ? <LoggedInNavbar /> : <Navbar />} {/* ✅ Dynamic navbar */}
+
       <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl font-bold text-center text-gray-800 mb-12">
@@ -54,7 +58,7 @@ export default function ContactPage() {
 
               <button
                 type="submit"
-                className="w-full bg-black text-white font-semibold py-2 px-4 rounded-md hover:bg-black transition"
+                className="w-full bg-black text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition"
               >
                 Send Message
               </button>
@@ -81,13 +85,28 @@ export default function ContactPage() {
 
               <h3 className="text-lg font-semibold mt-6 text-gray-700">Follow Us</h3>
               <div className="flex gap-4 text-gray-500">
-                <a href="https://facebook.com/swiftshop" target="_blank" rel="noreferrer" className="hover:text-blue-600">
+                <a
+                  href="https://facebook.com/swiftshop"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-blue-600"
+                >
                   <Facebook className="w-5 h-5" />
                 </a>
-                <a href="https://twitter.com/swiftshop" target="_blank" rel="noreferrer" className="hover:text-blue-500">
+                <a
+                  href="https://twitter.com/swiftshop"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-blue-500"
+                >
                   <Twitter className="w-5 h-5" />
                 </a>
-                <a href="https://instagram.com/swiftshop" target="_blank" rel="noreferrer" className="hover:text-pink-500">
+                <a
+                  href="https://instagram.com/swiftshop"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-pink-500"
+                >
                   <Instagram className="w-5 h-5" />
                 </a>
               </div>

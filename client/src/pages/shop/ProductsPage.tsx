@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import ProductCard from "../../components/shop/ProductCard";
 import Navbar from "../../components/navbar/Navbar";
+import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 import Footer from "../../components/footer/Footer";
 import type { Product } from "../../types/Product";
 import { productData } from "../../data/products";
+import { AuthContext } from "../../context/AuthContext"; // 👈 Import AuthContext
 
 const allBrands = [
   "Brand-All",
@@ -15,6 +17,8 @@ const allCategories = [
 ];
 
 export default function ProductsPage() {
+  const { user } = useContext(AuthContext); // 👈 Get user from context
+
   const [products, setProducts] = useState<Product[]>(productData);
   const [brand, setBrand] = useState("Brand-All");
   const [category, setCategory] = useState("Category-All");
@@ -30,7 +34,8 @@ export default function ProductsPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navbar />
+      {/* Conditional navbar */}
+      {user ? <LoggedInNavbar /> : <Navbar />}
 
       <main className="flex-1 px-4 sm:px-6 py-8">
         <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">

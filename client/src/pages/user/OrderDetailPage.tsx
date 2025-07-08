@@ -1,10 +1,12 @@
 import { useParams, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Footer from "../../components/footer/Footer";
-import { BadgeCheck, Clock, XCircle } from "lucide-react";
+import Navbar from "../../components/navbar/Navbar";
 import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
+import LoginModal from "../../components/auth/LoginModal"; // Adjust path if needed
+import { AuthContext } from "../../context/AuthContext";
+import { BadgeCheck, Clock, XCircle } from "lucide-react";
 
-// Example order item type
 interface OrderItem {
   name: string;
   quantity: number;
@@ -44,66 +46,44 @@ const sampleOrders: Order[] = [
       },
     ],
   },
-  {
-    id: 102,
-    date: "2025-07-01",
-    total: 8500,
-    status: "Pending",
-    items: [
-      {
-        name: "Court Vision",
-        quantity: 1,
-        price: 8500,
-        image: "/assets/images/shoe-green1.png",
-        selectedSize: "40",
-      },
-    ],
-  },
-  {
-    id: 103,
-    date: "2025-07-01",
-    total: 8500,
-    status: "Pending",
-    items: [
-      {
-        name: "Court Vision",
-        quantity: 1,
-        price: 8500,
-        image: "/assets/images/shoe-green1.png",
-        selectedSize: "40",
-      },
-    ],
-  },
-  {
-    id: 104,
-    date: "2025-07-01",
-    total: 8500,
-    status: "Pending",
-    items: [
-      {
-        name: "Court Vision",
-        quantity: 1,
-        price: 8500,
-        image: "/assets/images/shoe-green1.png",
-        selectedSize: "40",
-      },
-    ],
-  },
+  // ... other orders
 ];
 
 export default function OrderDetailsPage() {
   const { id } = useParams();
+  const { user } = useContext(AuthContext);
   const [order, setOrder] = useState<Order | null>(null);
+  const [showLogin, setShowLogin] = useState(!user);
 
   useEffect(() => {
-    const foundOrder = sampleOrders.find((o) => o.id === Number(id));
-    setOrder(foundOrder || null);
-  }, [id]);
+    if (user) {
+      const foundOrder = sampleOrders.find((o) => o.id === Number(id));
+      setOrder(foundOrder || null);
+    }
+  }, [id, user]);
+
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <LoginModal onClose={() => setShowLogin(false)} onSwitch={() => {}} />
+      </>
+    );
+  }
 
   if (!order) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-600">
-        <p>Order not found. <Link to="/my-orders" className="text-blue-600 underline ml-2">Go back</Link></p>
+      <div className="min-h-screen flex flex-col">
+        <LoggedInNavbar />
+        <main className="flex-grow flex items-center justify-center text-gray-600">
+          <p>
+            Order not found.
+            <Link to="/my-orders" className="text-blue-600 underline ml-2">
+              Go back
+            </Link>
+          </p>
+        </main>
+        <Footer />
       </div>
     );
   }
@@ -134,7 +114,6 @@ export default function OrderDetailsPage() {
           </span>
         </div>
 
-        {/* Order Items */}
         <div className="space-y-6">
           {order.items.map((item, idx) => (
             <div
@@ -160,7 +139,6 @@ export default function OrderDetailsPage() {
           ))}
         </div>
 
-        {/* Total */}
         <div className="mt-8 flex justify-end">
           <div className="bg-white rounded-xl shadow p-4 text-right w-full sm:w-1/2">
             <p className="text-sm text-gray-500">Order Total:</p>

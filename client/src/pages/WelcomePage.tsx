@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import Navbar from "../components/navbar/Navbar";
+import LoggedInNavbar from "../components/navbar/LoggedInNavbar";
 import Footer from "../components/footer/Footer";
+import { useAuth } from "../context/AuthContext";
 
 const slides = [
   {
@@ -25,6 +27,7 @@ const slides = [
 
 export default function WelcomePage() {
   const [index, setIndex] = useState(0);
+  const { user } = useAuth();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -52,14 +55,12 @@ export default function WelcomePage() {
         />
       </AnimatePresence>
 
-      
-
       <div
         className={`absolute inset-0 bg-gradient-to-br ${current.color} opacity-60 z-10 transition-all duration-1000`}
       ></div>
 
       <div className="relative z-20 flex flex-col min-h-screen">
-        <Navbar />
+        {user ? <LoggedInNavbar /> : <Navbar />}
 
         <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-12">
           <motion.div

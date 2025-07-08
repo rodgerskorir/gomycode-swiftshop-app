@@ -1,9 +1,11 @@
-import { useParams, useNavigate } from "react-router-dom"; // useNavigate
-import { useContext, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../../components/cart/CartContext";
+import { AuthContext } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import { ShoppingCart } from "lucide-react";
 import Navbar from "../../components/navbar/Navbar";
+import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 import Footer from "../../components/footer/Footer";
 
 import { productData } from "../../data/products";
@@ -11,12 +13,22 @@ import SimilarProductCard from "../../components/shop/SimilarProductCard";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
-  const navigate = useNavigate(); // ⬅ Init navigate
+  const navigate = useNavigate();
   const product = productData.find((p) => p.id === Number(id));
   const { cart, addToCart } = useContext(CartContext);
+  const { user } = useContext(AuthContext); // 👈 Add this line
 
   const [selectedSize, setSelectedSize] = useState("");
-  const [showCartButton, setShowCartButton] = useState(false); // ⬅ NEW state
+  const [showCartButton, setShowCartButton] = useState(false);
+
+  // 👇 Show toast for guests
+  useEffect(() => {
+    if (!user) {
+      toast.info("Log in to save your cart or check out faster!", {
+        toastId: "login-to-save", // prevents duplicates
+      });
+    }
+  }, [user]);
 
   if (!product) {
     return <p className="text-center py-10">Product not found</p>;
@@ -44,20 +56,22 @@ export default function ProductDetailPage() {
     });
 
     toast.success(`${product.name} added to cart`);
-    setShowCartButton(true); // ⬅ Show button on success
+    setShowCartButton(true);
   };
+
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navbar */}
+      {/* Navbar (conditional) */}
       <div className="relative">
-        <Navbar />
+        {user ? <LoggedInNavbar /> : <Navbar />}
         <div className="absolute top-4 right-6">
           <div className="relative">
             <ShoppingCart className="w-6 h-6 text-black" />
-            {cart.length > 0 && (
+            {totalItems > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {cart.length}
+                {totalItems}
               </span>
             )}
           </div>
@@ -65,7 +79,7 @@ export default function ProductDetailPage() {
       </div>
 
       {/* Main Section */}
-      <main className=" bg-gray-50 max-w-6xl mx-auto p-6 grid md:grid-cols-2 gap-10">
+      <main className="bg-gray-50 max-w-6xl mx-auto p-6 grid md:grid-cols-2 gap-10">
         <div className="space-y-4">
           {product.image.map((img, i) => (
             <img
@@ -139,8 +153,7 @@ export default function ProductDetailPage() {
           {productData
             .filter(
               (p) =>
-                (p.category === product.category ||
-                  p.brand === product.brand) &&
+                (p.category === product.category || p.brand === product.brand) &&
                 p.id !== product.id
             )
             .slice(0, 4)

@@ -1,11 +1,35 @@
-
-
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
 import Footer from "../../components/footer/Footer";
 import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
+import LoginModal from "../../components/auth/LoginModal";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function OrderSuccessPage() {
+  const { user } = useContext(AuthContext);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      setShowLoginModal(true);
+    }
+  }, [user]);
+
+  if (!user) {
+    return (
+      <>
+        <LoggedInNavbar />
+        {showLoginModal && (
+          <LoginModal
+            onClose={() => setShowLoginModal(false)}
+            onSwitch={() => setShowLoginModal(false)}
+          />
+        )}
+      </>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <LoggedInNavbar />

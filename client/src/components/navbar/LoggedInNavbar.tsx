@@ -1,23 +1,35 @@
 import { useContext, useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, Menu, X } from "lucide-react";
 import { CartContext } from "../cart/CartContext";
+import { useAuth } from "../../context/AuthContext";
 
 export default function LoggedInNavbar() {
   const { cartCount } = useContext(CartContext);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+ const { logout } = useAuth();
+
+const handleLogout = () => {
+  logout(); // this calls setUser(null) and clears storage correctly
+  navigate("/"); // optional redirect
+};
 
   return (
     <header className="bg-white shadow sticky top-0 z-40">
@@ -34,12 +46,24 @@ export default function LoggedInNavbar() {
         </button>
 
         <nav className="hidden md:flex gap-6 items-center font-medium">
-          <Link to="/" className="hover:text-blue-500">Home</Link>
-          <Link to="/products" className="hover:text-blue-500">Shop</Link>
-          <Link to="/my-orders" className="hover:text-blue-500">My Orders</Link>
-          <Link to="/profile" className="hover:text-blue-500">Profile</Link>
-          <Link to="/contact" className="hover:text-blue-500">Contact</Link>
-          <Link to="/about" className="hover:text-blue-500">About</Link>
+          <Link to="/" className="hover:text-blue-500">
+            Home
+          </Link>
+          <Link to="/products" className="hover:text-blue-500">
+            Shop
+          </Link>
+          <Link to="/my-orders" className="hover:text-blue-500">
+            My Orders
+          </Link>
+          <Link to="/profile" className="hover:text-blue-500">
+            Profile
+          </Link>
+          <Link to="/contact" className="hover:text-blue-500">
+            Contact
+          </Link>
+          <Link to="/about" className="hover:text-blue-500">
+            About
+          </Link>
 
           <Link to="/cart" className="relative hover:text-blue-500">
             <ShoppingCart className="w-5 h-5" />
@@ -63,10 +87,23 @@ export default function LoggedInNavbar() {
             </button>
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-2 z-50">
-                <Link to="/profile" className="block px-4 py-2 text-sm hover:bg-gray-100">Profile</Link>
-                <Link to="/my-orders" className="block px-4 py-2 text-sm hover:bg-gray-100">My Orders</Link>
-                <Link to="/admin/dashboard" className="block px-4 py-2 text-sm hover:bg-gray-100">Admin Dashboard</Link>
-                <button className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
+                <Link
+                  to="/profile"
+                  className="block px-4 py-2 text-sm hover:bg-gray-100"
+                >
+                  Profile
+                </Link>
+                <Link
+                  to="/my-orders"
+                  className="block px-4 py-2 text-sm hover:bg-gray-100"
+                >
+                  My Orders
+                </Link>
+
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                >
                   Logout
                 </button>
               </div>
@@ -77,14 +114,54 @@ export default function LoggedInNavbar() {
 
       {mobileMenuOpen && (
         <div className="md:hidden px-4 pb-4 space-y-2 font-medium">
-          <Link to="/" className="block hover:text-blue-500" onClick={() => setMobileMenuOpen(false)}>Home</Link>
-          <Link to="/products" className="block hover:text-blue-500" onClick={() => setMobileMenuOpen(false)}>Shop</Link>
-          <Link to="/my-orders" className="block hover:text-blue-500" onClick={() => setMobileMenuOpen(false)}>My Orders</Link>
-          <Link to="/profile" className="block hover:text-blue-500" onClick={() => setMobileMenuOpen(false)}>Profile</Link>
-          <Link to="/contact" className="block hover:text-blue-500" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
-          <Link to="/about" className="block hover:text-blue-500" onClick={() => setMobileMenuOpen(false)}>About</Link>
-          <Link to="/admin/dashboard" className="block hover:text-blue-500" onClick={() => setMobileMenuOpen(false)}>Admin Dashboard</Link>
-          <Link to="/cart" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2 hover:text-blue-500">
+          <Link
+            to="/"
+            className="block hover:text-blue-500"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Home
+          </Link>
+          <Link
+            to="/products"
+            className="block hover:text-blue-500"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Shop
+          </Link>
+          <Link
+            to="/my-orders"
+            className="block hover:text-blue-500"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            My Orders
+          </Link>
+          <Link
+            to="/profile"
+            className="block hover:text-blue-500"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Profile
+          </Link>
+          <Link
+            to="/contact"
+            className="block hover:text-blue-500"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Contact
+          </Link>
+          <Link
+            to="/about"
+            className="block hover:text-blue-500"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            About
+          </Link>
+
+          <Link
+            to="/cart"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-2 hover:text-blue-500"
+          >
             <ShoppingCart className="w-5 h-5" />
             {cartCount > 0 && (
               <span className="bg-yellow-400 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -93,7 +170,13 @@ export default function LoggedInNavbar() {
             )}
             <span>Cart</span>
           </Link>
-          <button onClick={() => setMobileMenuOpen(false)} className="block hover:text-blue-500">
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              handleLogout();
+            }}
+            className="block hover:text-blue-500"
+          >
             Logout
           </button>
         </div>

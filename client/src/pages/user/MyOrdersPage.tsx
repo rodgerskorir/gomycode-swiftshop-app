@@ -1,13 +1,15 @@
-import { useState } from "react";
-
+import { useState, useContext } from "react";
 import Footer from "../../components/footer/Footer";
+import Navbar from "../../components/navbar/Navbar";
+import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 import { Link } from "react-router-dom";
 import { BadgeCheck, Clock, XCircle } from "lucide-react";
-import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
+import { AuthContext } from "../../context/AuthContext";
+import LoginModal from "../../components/auth/LoginModal"; // adjust path as needed
 
 interface Order {
   id: number;
-  date: string; // format: YYYY-MM-DD
+  date: string;
   total: number;
   status: "Pending" | "Delivered" | "Cancelled";
 }
@@ -20,6 +22,9 @@ const sampleOrders: Order[] = [
 ];
 
 export default function MyOrdersPage() {
+  const { user } = useContext(AuthContext);
+  const [showLogin, setShowLogin] = useState(!user);
+
   const [orders] = useState<Order[]>(sampleOrders);
   const [statusFilter, setStatusFilter] = useState<
     "All" | "Pending" | "Delivered" | "Cancelled"
@@ -35,6 +40,15 @@ export default function MyOrdersPage() {
         ? new Date(b.date).getTime() - new Date(a.date).getTime()
         : new Date(a.date).getTime() - new Date(b.date).getTime()
     );
+
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <LoginModal onClose={() => setShowLogin(false)} onSwitch={() => {}} />
+      </>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">

@@ -1,13 +1,18 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../../components/cart/CartContext";
+import { AuthContext } from "../../context/AuthContext";
 import Footer from "../../components/footer/Footer";
+import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
+import LoginModal from "../../components/auth/LoginModal";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 
 export default function CheckoutPage() {
-  const { cart } = useContext(CartContext);
+  const { cart, clearCart } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -15,6 +20,12 @@ export default function CheckoutPage() {
     phone: "",
     address: "",
   });
+
+  useEffect(() => {
+    if (!user) {
+      setShowLoginModal(true);
+    }
+  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -24,7 +35,6 @@ export default function CheckoutPage() {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const { clearCart } = useContext(CartContext);
 
   const handlePlaceOrder = () => {
     if (!form.name || !form.email || !form.phone || !form.address) {
@@ -37,15 +47,27 @@ export default function CheckoutPage() {
       return;
     }
 
-    // //
-    // Payment to added
+    // Payment logic would go here (e.g., integration with M-Pesa or Stripe)
 
-    
-    // order success
     toast.success("Order placed successfully!");
     clearCart();
-    navigate("/order-success"); // Redirect after placing order (or to a thank you page)
+    navigate("/order-success");
   };
+
+  // ❌ Block access if not logged in
+  if (!user) {
+    return (
+      <>
+        <LoggedInNavbar />
+        {showLoginModal && (
+          <LoginModal
+            onClose={() => setShowLoginModal(false)}
+            onSwitch={() => setShowLoginModal(false)}
+          />
+        )}
+      </>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">

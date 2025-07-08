@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { motion } from "framer-motion";
+import { AuthContext } from "../../context/AuthContext"; // ✅ Make sure the path is correct
 
 interface Props {
   onClose: () => void;
@@ -7,9 +8,11 @@ interface Props {
 }
 
 export default function LoginModal({ onClose, onSwitch }: Props) {
-  const [identifier, setIdentifier] = useState(""); // can be email or username
+  const [identifier, setIdentifier] = useState(""); // email or username
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const { login } = useContext(AuthContext); // ✅ use login from context
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,8 +38,9 @@ export default function LoginModal({ onClose, onSwitch }: Props) {
       }
 
       setError("");
-      console.log("✅ Login success:", data);
-      onClose();
+
+      login(data); // ✅ This updates AuthContext with the logged-in user
+      onClose();   // ✅ Close modal after successful login
     } catch (err) {
       setError("Something went wrong. Try again.");
     }
@@ -56,6 +60,7 @@ export default function LoginModal({ onClose, onSwitch }: Props) {
         >
           ✕
         </button>
+
         <h2 className="text-2xl font-bold mb-4 text-center text-black">Login</h2>
 
         {error && (

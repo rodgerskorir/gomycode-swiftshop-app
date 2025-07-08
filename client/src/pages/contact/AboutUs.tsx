@@ -1,12 +1,18 @@
+
 import { motion } from "framer-motion";
 import Navbar from "../../components/navbar/Navbar";
+import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 import Footer from "../../components/footer/Footer";
 import { Facebook, Twitter, Instagram } from "lucide-react";
+import { useAuth } from "../../context/AuthContext"; // ✅ IMPORT AUTH CONTEXT
 
 export default function AboutPage() {
+  const { user } = useAuth(); // ✅ GET USER FROM CONTEXT
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 text-gray-800">
-      <Navbar />
+      {/* Navbar */}
+      {user ? <LoggedInNavbar /> : <Navbar />} {/* ✅ REACTIVE NAVBAR */}
 
       <main className="flex-1 px-4 sm:px-6 lg:px-20 py-12 max-w-7xl mx-auto">
         {/* Hero Section */}
@@ -25,7 +31,7 @@ export default function AboutPage() {
           </p>
         </motion.section>
 
-        {/* Company Mission & Vision */}
+        {/* Mission & Vision */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -63,7 +69,7 @@ export default function AboutPage() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="text-center"
+          className="text-center mb-16"
         >
           <h2 className="text-3xl font-bold mb-6">Why Choose SwiftShop?</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -90,38 +96,38 @@ export default function AboutPage() {
             </div>
           </div>
         </motion.section>
+
+        {/* Social Media */}
+        <section className="text-center mb-16">
+          <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
+          <div className="flex justify-center gap-6 text-gray-600">
+            <a
+              href="https://facebook.com/swiftshop"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-600 transition"
+            >
+              <Facebook className="w-6 h-6" />
+            </a>
+            <a
+              href="https://twitter.com/swiftshop"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-500 transition"
+            >
+              <Twitter className="w-6 h-6" />
+            </a>
+            <a
+              href="https://instagram.com/swiftshop"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-pink-500 transition"
+            >
+              <Instagram className="w-6 h-6" />
+            </a>
+          </div>
+        </section>
       </main>
-      {/* Social Media Links */}
-      <section className="text-center mt-12">
-        <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
-        <div className="flex justify-center gap-6 text-gray-600">
-          <a
-            href="https://facebook.com/swiftshop"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-blue-600 transition"
-          >
-            <Facebook className="w-6 h-6" />
-          </a>
-          <a
-            href="https://twitter.com/swiftshop"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-blue-500 transition"
-          >
-            <Twitter className="w-6 h-6" />
-          </a>
-          <a
-            href="https://instagram.com/swiftshop"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-pink-500 transition"
-          >
-            <Instagram className="w-6 h-6" />
-          </a>
-          
-        </div>
-      </section>
 
       <Footer />
     </div>
