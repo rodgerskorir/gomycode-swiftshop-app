@@ -1,10 +1,10 @@
 import React, { useState, useContext } from "react";
 import { motion } from "framer-motion";
-import { AuthContext } from "../../context/AuthContext"; // ✅ Make sure the path is correct
+import { AuthContext } from "../../context/AuthContext"; //  Make sure the path is correct
 
 interface Props {
   onClose: () => void;
-  onSwitch: () => void;
+  onSwitch?: () => void;
 }
 
 export default function LoginModal({ onClose, onSwitch }: Props) {
@@ -12,7 +12,7 @@ export default function LoginModal({ onClose, onSwitch }: Props) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const { login } = useContext(AuthContext); // ✅ use login from context
+  const { login } = useContext(AuthContext); //  use login from context
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,8 +39,8 @@ export default function LoginModal({ onClose, onSwitch }: Props) {
 
       setError("");
 
-      login(data); // ✅ This updates AuthContext with the logged-in user
-      onClose();   // ✅ Close modal after successful login
+      login(data); //  updates AuthContext with the logged-in user
+      onClose();   // ose modal after successful login
     } catch (err) {
       setError("Something went wrong. Try again.");
     }

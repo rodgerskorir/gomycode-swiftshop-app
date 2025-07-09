@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
-import { productData } from "../../data/products"; // adjust path if needed
+import { productData } from "../../data/products";
 import type { Product } from "../../types/Product";
+import AddProductModal from "../../components/admin/AddProductModal"; // Make sure path is correct
 
 const allBrands = ["Brand-All", "Nike", "Adidas", "Puma"];
 const allCategories = ["Category-All", "Sneakers", "Running", "Casual"];
@@ -11,6 +12,7 @@ export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>(productData);
   const [brand, setBrand] = useState("Brand-All");
   const [category, setCategory] = useState("Category-All");
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const filtered = productData.filter(
@@ -25,6 +27,11 @@ export default function AdminProductsPage() {
     setProducts((prev) => prev.filter((p) => p.id !== id));
   };
 
+  const handleAddProduct = (newProduct: Product) => {
+    setProducts((prev) => [...prev, newProduct]);
+    setShowModal(false);
+  };
+
   return (
     <div className="flex min-h-screen">
       <AdminSidebar />
@@ -34,14 +41,17 @@ export default function AdminProductsPage() {
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
             Products
           </h1>
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm">
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm"
+          >
             <Plus size={16} /> Add Product
           </button>
         </div>
 
         {/* Filters */}
         <div className="flex flex-wrap gap-4 mb-6">
-          <p className="text-sm text-gray-50 dark:text-gray-50 mb-2">
+          <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
             Filter products by brand or category
           </p>
 
@@ -126,6 +136,14 @@ export default function AdminProductsPage() {
           </table>
         </div>
       </main>
+
+      {/* Add Product Modal */}
+      {showModal && (
+        <AddProductModal
+          onClose={() => setShowModal(false)}
+          onSave={handleAddProduct}
+        />
+      )}
     </div>
   );
 }

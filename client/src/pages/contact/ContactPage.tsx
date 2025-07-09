@@ -1,4 +1,11 @@
-import { Mail, MapPin, Phone, Facebook, Instagram, Twitter } from "lucide-react";
+import {
+  Mail,
+  MapPin,
+  Phone,
+  Facebook,
+  Instagram,
+  Twitter,
+} from "lucide-react";
 import Navbar from "../../components/navbar/Navbar";
 import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 import Footer from "../../components/footer/Footer";
@@ -10,7 +17,6 @@ export default function ContactPage() {
   return (
     <>
       {user ? <LoggedInNavbar /> : <Navbar />} {/* ✅ Dynamic navbar */}
-
       <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl font-bold text-center text-gray-800 mb-12">
@@ -21,7 +27,10 @@ export default function ContactPage() {
             {/* Contact Form */}
             <form className="bg-white p-8 rounded-xl shadow-md space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Name
                 </label>
                 <input
@@ -33,7 +42,10 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Email
                 </label>
                 <input
@@ -45,7 +57,10 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="message"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Message
                 </label>
                 <textarea
@@ -66,7 +81,9 @@ export default function ContactPage() {
 
             {/* Contact Info */}
             <div className="bg-white p-8 rounded-xl shadow-md space-y-6">
-              <h2 className="text-2xl font-semibold text-gray-800">Our Store</h2>
+              <h2 className="text-2xl font-semibold text-gray-800">
+                Our Store
+              </h2>
 
               <div className="flex items-center gap-4 text-gray-600">
                 <MapPin className="w-5 h-5 text-red-500" />
@@ -83,7 +100,9 @@ export default function ContactPage() {
                 <span>kipkuruikorir968@gmail.com</span>
               </div>
 
-              <h3 className="text-lg font-semibold mt-6 text-gray-700">Follow Us</h3>
+              <h3 className="text-lg font-semibold mt-6 text-gray-700">
+                Follow Us
+              </h3>
               <div className="flex gap-4 text-gray-500">
                 <a
                   href="https://facebook.com/swiftshop"
@@ -112,7 +131,9 @@ export default function ContactPage() {
               </div>
 
               <div className="mt-8">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Visit Us</h3>
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                  Visit Us
+                </h3>
                 <div className="aspect-w-16 aspect-h-9">
                   <iframe
                     title="SwiftShop Map"
@@ -126,7 +147,6 @@ export default function ContactPage() {
           </div>
         </div>
       </main>
-
       <Footer />
     </>
   );

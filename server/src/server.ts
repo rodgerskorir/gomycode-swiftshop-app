@@ -3,6 +3,7 @@ import { config } from "dotenv";
 import cors from "cors";
 import { dbConnect } from "./db/dbConnect";
 import { userRouter } from "./routes/userRoute";
+import { productRouter } from "./routes/productRoute";
 
 
 // Load .env variables
@@ -27,6 +28,7 @@ app.get("/", (req: Request, res: Response) => {
 
 // Register user routes (e.g., /swiftshop/users/register, /swiftshop/users/login)
 app.use("/swiftshop/users", userRouter);
+app.use("/swiftshop/products", productRouter); // Mount your product route
 
 // Catch-all route for invalid paths
 app.use((req: Request, res: Response) => {
