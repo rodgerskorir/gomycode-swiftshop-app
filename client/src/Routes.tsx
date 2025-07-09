@@ -7,10 +7,6 @@ import ProductDetailPage from "./pages/shop/ProductDetailPage";
 import ContactPage from "./pages/contact/ContactPage";
 import AboutPage from "./pages/contact/AboutUs";
 
-// Auth pages
-
-
-
 // User account pages
 import ProfilePage from "./pages/user/ProfilePage";
 import MyOrdersPage from "./pages/user/MyOrdersPage";
@@ -19,9 +15,8 @@ import OrderDetailPage from "./pages/user/OrderDetailPage";
 // Admin pages
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminProductsPage from "./pages/admin/ProductsPage";
-import EditProductPage from "./pages/admin/EditProductPage";
 import AdminUsersPage from "./pages/admin/UsersPage";
-import EditUserPage from "./pages/admin/EditUserPage";
+import RevenuePage from "./pages/admin/RevenuePage";
 import AdminOrdersPage from "./pages/admin/OrdersPage";
 
 // Cart & checkout
@@ -33,6 +28,10 @@ import OrderSuccessPage from "./pages/shop/OrderSuccessPage";
 import NotFoundPage from "./pages/system/NotFoundPage";
 import ErrorPage from "./pages/system/ErrorPage";
 
+
+// Route guards
+import  ProtectedRoute  from "./components/auth/ProtectedRoute";
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -43,22 +42,82 @@ export default function AppRoutes() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/about" element={<AboutPage />} />
 
-      {/* Auth */}
-      
-   
+      {/* User (protected) */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/my-orders"
+        element={
+          <ProtectedRoute>
+            <MyOrdersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/my-orders/:id"
+        element={
+          <ProtectedRoute>
+            <OrderDetailPage />
+          </ProtectedRoute>
+        }
+      />
 
-      {/* User */}
-      <Route path="/profile" element={<ProfilePage />} />
-      <Route path="/my-orders" element={<MyOrdersPage />} />
-      <Route path="/my-orders/:id" element={<OrderDetailPage />} />
+      {/* Admin (admin only) */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
 
-      {/* Admin */}
-      <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/admin/products" element={<AdminProductsPage />} />
-      <Route path="/admin/products/:id/edit" element={<EditProductPage />} />
-      <Route path="/admin/users" element={<AdminUsersPage />} />
-      <Route path="/admin/users/:id/edit" element={<EditUserPage />} />
-      <Route path="/admin/orders" element={<AdminOrdersPage />} />
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/products"
+        element={
+          <ProtectedRoute>
+
+            <AdminProductsPage />
+          </ProtectedRoute>
+         
+        }
+      />
+      <Route
+        path="/admin/revenue"
+        element={
+          <ProtectedRoute>
+
+            <RevenuePage />
+          </ProtectedRoute>
+         
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute>
+
+            <AdminUsersPage />
+          </ProtectedRoute>
+         
+        }
+      />
+      <Route
+        path="/admin/orders"
+        element={
+          <ProtectedRoute>
+
+            <AdminOrdersPage />
+          </ProtectedRoute>
+         
+        }
+      />
 
       {/* Cart & Checkout */}
       <Route path="/cart" element={<CartPage />} />

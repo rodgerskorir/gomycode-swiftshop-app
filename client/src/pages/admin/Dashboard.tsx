@@ -1,9 +1,18 @@
 import { useEffect, useState } from "react";
-import { ShoppingBag, DollarSign, Users, PackageCheck } from "lucide-react";
+import {
+  ShoppingBag,
+  DollarSign,
+  Users,
+  PackageCheck,
+  PackageX,
+  BarChart3,
+} from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 
 interface Order {
   total: number;
+  date: string;
+  status: string;
 }
 
 interface User {
@@ -12,6 +21,8 @@ interface User {
 
 interface Product {
   name: string;
+  stock: number;
+  sold: number;
 }
 
 export default function AdminDashboard() {
@@ -20,22 +31,33 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    // dummy data
-    setOrders([{ total: 10000 }, { total: 5000 }]);
+    // Dummy data
+    setOrders([
+      { total: 10000, date: "2025-07-01", status: "completed" },
+      { total: 5000, date: "2025-07-08", status: "pending" },
+    ]);
     setUsers([{ name: "User1" }, { name: "User2" }]);
-    setProducts([{ name: "Sneaker" }, { name: "T-shirt" }]);
+    setProducts([
+      { name: "Sneaker", stock: 4, sold: 12 },
+      { name: "T-shirt", stock: 2, sold: 30 },
+    ]);
   }, []);
 
   const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+  const lowStockProducts = products.filter((p) => p.stock < 5);
+  const topProducts = [...products].sort((a, b) => b.sold - a.sold);
+  const recentOrders = [...orders].slice(0, 5);
 
   return (
     <div className="flex min-h-screen">
       <AdminSidebar />
 
       <main className="flex-1 p-8 bg-gray-100 dark:bg-gray-900">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
+          Admin Dashboard
+        </h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <DashboardCard
             title="Total Orders"
             value={orders.length}
@@ -56,6 +78,63 @@ export default function AdminDashboard() {
             value={products.length}
             icon={<PackageCheck size={20} />}
           />
+          <DashboardCard
+            title="Low Stock"
+            value={lowStockProducts.length}
+            icon={<PackageX size={20} />}
+          />
+          <DashboardCard
+            title="Pending Orders"
+            value={orders.filter((o) => o.status === "pending").length}
+            icon={<BarChart3 size={20} />}
+          />
+        </div>
+
+        {/* Recent Orders */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+            Recent Orders
+          </h2>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-gray-500 dark:text-gray-400">
+                <th className="py-2">Date</th>
+                <th className="py-2">Total</th>
+                <th className="py-2">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentOrders.map((order, index) => (
+                <tr key={index} className="border-t dark:border-gray-700">
+                  <td className="py-2 text-gray-700 dark:text-gray-300">{order.date}</td>
+                  <td className="py-2 text-gray-700 dark:text-gray-300">
+                    Ksh {order.total.toLocaleString()}
+                  </td>
+                  <td className="py-2 text-gray-700 dark:text-gray-300">
+                    {order.status}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Top Products */}
+        <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg p-6 shadow">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+            Top Selling Products
+          </h2>
+          <ul className="space-y-2">
+            {topProducts.map((product, index) => (
+              <li
+                key={index}
+                className="flex justify-between text-sm text-gray-700 dark:text-gray-300"
+              >
+                <span>{product.name}</span>
+                <span>{product.sold} sold</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </main>
     </div>

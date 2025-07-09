@@ -3,7 +3,8 @@ import { Plus, Edit, Trash2 } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import { productData } from "../../data/products";
 import type { Product } from "../../types/Product";
-import AddProductModal from "../../components/admin/AddProductModal"; // Make sure path is correct
+import AddProductModal from "../../components/admin/AddProductModal";
+import EditProductModal from "../../components/admin/EditProductModal";
 
 const allBrands = ["Brand-All", "Nike", "Adidas", "Puma"];
 const allCategories = ["Category-All", "Sneakers", "Running", "Casual"];
@@ -13,6 +14,7 @@ export default function AdminProductsPage() {
   const [brand, setBrand] = useState("Brand-All");
   const [category, setCategory] = useState("Category-All");
   const [showModal, setShowModal] = useState(false);
+  const [editProduct, setEditProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     const filtered = productData.filter(
@@ -30,6 +32,11 @@ export default function AdminProductsPage() {
   const handleAddProduct = (newProduct: Product) => {
     setProducts((prev) => [...prev, newProduct]);
     setShowModal(false);
+  };
+
+  const handleUpdateProduct = (updated: Product) => {
+    setProducts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+    setEditProduct(null);
   };
 
   return (
@@ -107,10 +114,12 @@ export default function AdminProductsPage() {
                   <td className="p-3">{p.brand}</td>
                   <td className="p-3">{p.category}</td>
                   <td className="p-3">Ksh {p.price.toLocaleString()}</td>
-                  <td className="p-3">{p.sizes.length * 5}</td>{" "}
-                  {/* Dummy stock */}
+                  <td className="p-3">{p.sizes.length * 5}</td>
                   <td className="p-3 space-x-2">
-                    <button className="inline-flex items-center justify-center p-2 rounded-md bg-yellow-400 hover:bg-yellow-500 text-white">
+                    <button
+                      onClick={() => setEditProduct(p)}
+                      className="inline-flex items-center justify-center p-2 rounded-md bg-yellow-400 hover:bg-yellow-500 text-white"
+                    >
                       <Edit size={16} />
                     </button>
                     <button
@@ -142,6 +151,15 @@ export default function AdminProductsPage() {
         <AddProductModal
           onClose={() => setShowModal(false)}
           onSave={handleAddProduct}
+        />
+      )}
+
+      {/* Edit Product Modal */}
+      {editProduct && (
+        <EditProductModal
+          product={editProduct}
+          onClose={() => setEditProduct(null)}
+          onUpdate={handleUpdateProduct}
         />
       )}
     </div>

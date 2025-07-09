@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { motion } from "framer-motion";
-import { AuthContext } from "../../context/AuthContext"; //  Make sure the path is correct
+import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom"; // ✅ Add navigation
 
 interface Props {
   onClose: () => void;
@@ -8,14 +9,18 @@ interface Props {
 }
 
 export default function LoginModal({ onClose, onSwitch }: Props) {
-  const [identifier, setIdentifier] = useState(""); // email or username
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { login } = useContext(AuthContext); //  use login from context
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate(); // ✅ React Router hook
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     const isEmail = identifier.includes("@");
     const payload = {
@@ -34,15 +39,23 @@ export default function LoginModal({ onClose, onSwitch }: Props) {
 
       if (!res.ok) {
         setError(data.error || "Login failed");
+        setIsLoading(false);
         return;
       }
 
-      setError("");
+      login(data); // update AuthContext
+      onClose();
 
-      login(data); //  updates AuthContext with the logged-in user
-      onClose();   // ose modal after successful login
+      // ✅ Redirect logic based on role
+      if (data.user?.role === "admin") {
+        navigate("/admin/");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       setError("Something went wrong. Try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -90,9 +103,12 @@ export default function LoginModal({ onClose, onSwitch }: Props) {
           </div>
           <button
             type="submit"
-            className="w-full bg-black text-white py-2 rounded-md hover:bg-blue-700"
+            disabled={isLoading}
+            className={`w-full py-2 rounded-md text-white ${
+              isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-black hover:bg-blue-700"
+            }`}
           >
-            Log In
+            {isLoading ? "Logging in..." : "Log In"}
           </button>
         </form>
 

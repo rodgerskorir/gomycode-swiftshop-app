@@ -104,7 +104,9 @@ export default function AddProductModal({ onClose, onSave }: AddProductModalProp
               multiple
               accept="image/*"
               onChange={handleImageChange}
-              className="w-full text-sm text-gray-700 dark:text-gray-200 bg-gray-800 py-5 px-4"
+              className="w-full text-sm text-gray-700 dark:text-gray-200 file:mr-4 file:py-2 file:px-4
+                         file:rounded-md file:border-0 file:text-sm file:font-semibold
+                         file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
             {imageFiles.length > 0 && (
               <div className="flex gap-2 mt-2 flex-wrap">

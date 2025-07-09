@@ -31,6 +31,7 @@ const handleLogout = () => {
   navigate("/"); // optional redirect
 };
 
+
   return (
     <header className="bg-white shadow sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">

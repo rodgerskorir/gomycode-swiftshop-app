@@ -1,18 +1,27 @@
 import { useState } from "react";
 import { Edit, Trash2, UserPlus } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
+import EditUserModal from "../../components/admin/EditUserModal";
 
-const sampleUsers = [
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  joined: string;
+}
+
+const sampleUsers: User[] = [
   {
     id: 1,
-    name: "Korir rodgers",
+    name: "Korir Rodgers",
     email: "korir@gmail.com",
     role: "admin",
     joined: "2025-01-15",
   },
   {
     id: 2,
-    name: "Ann key",
+    name: "Ann Key",
     email: "ann@gmail.com",
     role: "user",
     joined: "2025-03-12",
@@ -27,10 +36,16 @@ const sampleUsers = [
 ];
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState(sampleUsers);
+  const [users, setUsers] = useState<User[]>(sampleUsers);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const handleDelete = (id: number) => {
     setUsers((prev) => prev.filter((user) => user.id !== id));
+  };
+
+  const handleUpdateUser = (updated: User) => {
+    setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
   };
 
   return (
@@ -67,7 +82,13 @@ export default function AdminUsersPage() {
                   <td className="p-4 capitalize">{user.role}</td>
                   <td className="p-4">{user.joined}</td>
                   <td className="p-4 text-right space-x-2">
-                    <button className="inline-flex items-center justify-center p-2 rounded-md bg-yellow-400 hover:bg-yellow-500 text-white">
+                    <button
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setShowEditModal(true);
+                      }}
+                      className="inline-flex items-center justify-center p-2 rounded-md bg-yellow-400 hover:bg-yellow-500 text-white"
+                    >
                       <Edit size={16} />
                     </button>
                     <button
@@ -90,6 +111,15 @@ export default function AdminUsersPage() {
           </table>
         </div>
       </main>
+
+      {/* Edit User Modal */}
+      {showEditModal && selectedUser && (
+        <EditUserModal
+          user={selectedUser}
+          onClose={() => setShowEditModal(false)}
+          onUpdate={handleUpdateUser}
+        />
+      )}
     </div>
   );
 }

@@ -1,13 +1,14 @@
 import bcrypt from "bcrypt";
-import { Router, Request, Response, NextFunction } from "express";
+import { Router, Request, Response, NextFunction, response } from "express";
 import { Users } from "../models/UsersModel";
+import { loginUser } from "../controllers/userController";
 
 const router = Router();
 
 //Regiter //POST
 router.post("/", async (req, res) => {
   try {
-    const { name, email, username, phone, password } = req.body;
+    const { name, email, username, phone, password, role } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10); // 🔐 Hash password
 
@@ -17,6 +18,7 @@ router.post("/", async (req, res) => {
       username,
       phone,
       password: hashedPassword,
+      role,
     });
 
     res.status(201).json({ success: true, data: newUser });
@@ -25,52 +27,8 @@ router.post("/", async (req, res) => {
   }
 });
 
-// POST /login (accept email OR username)
-router.post(
-  "/login",
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { email, username, password } = req.body;
-
-      // Validate input
-      if ((!email && !username) || !password) {
-        return res.status(400).json({
-          success: false,
-          error: "Email or username and password are required",
-        });
-      }
-
-      // Find user by either email or username
-      const user = await Users.findOne(email ? { email } : { username });
-
-      if (!user) {
-        return res.status(401).json({
-          success: false,
-          error: "Invalid credentials",
-        });
-      }
-
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return res.status(401).json({
-          success: false,
-          error: "Invalid credentials, Try Again",
-        });
-      }
-
-      // Exclude password from response
-      const userResponse = user.toObject();
-      delete userResponse.password;
-
-      return res.status(200).json({
-        success: true,
-        data: userResponse,
-      });
-    } catch (err) {
-      next(err); // forward to express error handler
-    }
-  }
-);
+// POST /swiftshop/users/login
+router.post("/login", loginUser);
 
 //GET /
 router.get("/", async (req, res) => {
