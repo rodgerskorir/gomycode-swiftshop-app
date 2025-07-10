@@ -2,11 +2,11 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { X } from "lucide-react";
 
 interface User {
-  id: number;
+  _id: string;
   name: string;
   email: string;
   role: string;
-  joined: string;
+  createdAt: string;
 }
 
 interface EditUserModalProps {

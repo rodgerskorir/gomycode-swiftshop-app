@@ -1,42 +1,53 @@
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
-import { productData } from "../../data/products";
-import type { Product } from "../../types/Product";
 import AddProductModal from "../../components/admin/AddProductModal";
 import EditProductModal from "../../components/admin/EditProductModal";
+import type { Product } from "../../types/Product";
 
 const allBrands = ["Brand-All", "Nike", "Adidas", "Puma"];
 const allCategories = ["Category-All", "Sneakers", "Running", "Casual"];
 
 export default function AdminProductsPage() {
-  const [products, setProducts] = useState<Product[]>(productData);
+  const [products, setProducts] = useState<Product[]>([]);
   const [brand, setBrand] = useState("Brand-All");
   const [category, setCategory] = useState("Category-All");
   const [showModal, setShowModal] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
 
+  // Fetch from backend
   useEffect(() => {
-    const filtered = productData.filter(
-      (p) =>
-        (brand === "Brand-All" || p.brand === brand) &&
-        (category === "Category-All" || p.category === category)
-    );
-    setProducts(filtered);
-  }, [brand, category]);
+    fetch("http://localhost:5000/swiftshop/products")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setProducts(data.data);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch products", err));
+  }, []);
 
-  const handleDelete = (id: number) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
-  };
+  // Filter logic
+  const filtered = products.filter(
+    (p) =>
+      (brand === "Brand-All" || p.brand === brand) &&
+      (category === "Category-All" || p.category === category)
+  );
 
-  const handleAddProduct = (newProduct: Product) => {
-    setProducts((prev) => [...prev, newProduct]);
-    setShowModal(false);
-  };
+  // Delete product
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(`http://localhost:5000/swiftshop/products/${id}`, {
+        method: "DELETE",
+      });
 
-  const handleUpdateProduct = (updated: Product) => {
-    setProducts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
-    setEditProduct(null);
+      const data = await res.json();
+      if (data.success) {
+        setProducts((prev) => prev.filter((p) => p._id !== id));
+      }
+    } catch (err) {
+      console.error("Delete failed", err);
+    }
   };
 
   return (
@@ -93,14 +104,14 @@ export default function AdminProductsPage() {
                 <th className="text-left p-3">Brand</th>
                 <th className="text-left p-3">Category</th>
                 <th className="text-left p-3">Price</th>
-                <th className="text-left p-3">Stock</th>
+                <th className="text-left p-3">Stock</th>                
                 <th className="text-left p-3">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {products.map((p) => (
+              {filtered.map((p) => (
                 <tr
-                  key={p.id}
+                  key={p._id}
                   className="border-t dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-white"
                 >
                   <td className="p-3">
@@ -114,7 +125,7 @@ export default function AdminProductsPage() {
                   <td className="p-3">{p.brand}</td>
                   <td className="p-3">{p.category}</td>
                   <td className="p-3">Ksh {p.price.toLocaleString()}</td>
-                  <td className="p-3">{p.sizes.length * 5}</td>
+                  <td className="p-3">{p.numberOfStock}</td>
                   <td className="p-3 space-x-2">
                     <button
                       onClick={() => setEditProduct(p)}
@@ -123,7 +134,7 @@ export default function AdminProductsPage() {
                       <Edit size={16} />
                     </button>
                     <button
-                      onClick={() => handleDelete(p.id)}
+                      onClick={() => handleDelete(p._id)}
                       className="inline-flex items-center justify-center p-2 rounded-md bg-red-500 hover:bg-red-600 text-white"
                     >
                       <Trash2 size={16} />
@@ -131,7 +142,7 @@ export default function AdminProductsPage() {
                   </td>
                 </tr>
               ))}
-              {products.length === 0 && (
+              {filtered.length === 0 && (
                 <tr>
                   <td
                     colSpan={7}
@@ -146,20 +157,27 @@ export default function AdminProductsPage() {
         </div>
       </main>
 
-      {/* Add Product Modal */}
+      {/* Modals */}
       {showModal && (
         <AddProductModal
           onClose={() => setShowModal(false)}
-          onSave={handleAddProduct}
+          onSave={(product: Product) => {
+            setProducts((prev) => [...prev, product]);
+            setShowModal(false);
+          }}
         />
       )}
 
-      {/* Edit Product Modal */}
       {editProduct && (
         <EditProductModal
           product={editProduct}
           onClose={() => setEditProduct(null)}
-          onUpdate={handleUpdateProduct}
+          onUpdate={(updated: Product) => {
+            setProducts((prev) =>
+              prev.map((p) => (p._id === updated._id ? updated : p))
+            );
+            setEditProduct(null);
+          }}
         />
       )}
     </div>

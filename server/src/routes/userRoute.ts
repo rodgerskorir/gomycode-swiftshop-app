@@ -69,7 +69,7 @@ router.put("/:id", async (req, res) => {
     if (!updatedUser)
       res
         .status(404)
-        .json({ success: false, error: "Todo with that id does not exist" });
+        .json({ success: false, error: "User with that id does not exist" });
     res.status(201).json({ success: true, data: updatedUser });
   } catch (error: any) {
     res

@@ -4,7 +4,9 @@ import cors from "cors";
 import { dbConnect } from "./db/dbConnect";
 import { userRouter } from "./routes/userRoute";
 import { productRouter } from "./routes/productRoute";
-
+import { receiptRouter } from "./routes/receiptRoute";
+import { orderRouter } from "./routes/orderRoute";
+import { contactRouter } from "./routes/contactRoute";
 
 // Load .env variables
 config();
@@ -28,7 +30,10 @@ app.get("/", (req: Request, res: Response) => {
 
 // Register user routes (e.g., /swiftshop/users/register, /swiftshop/users/login)
 app.use("/swiftshop/users", userRouter);
-app.use("/swiftshop/products", productRouter); // Mount your product route
+app.use("/swiftshop/products", productRouter); //product route
+app.use("/swiftshop/receipts", receiptRouter); //receipt route
+app.use("/swiftshop/orders", orderRouter); //order route
+app.use("/swiftshop/contacts", contactRouter); //contact/message route
 
 // Catch-all route for invalid paths
 app.use((req: Request, res: Response) => {

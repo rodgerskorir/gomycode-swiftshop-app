@@ -8,22 +8,26 @@ export interface IProduct extends Document {
   price: number;
   image: string[];
   sizes: string[];
-  inStock: number;
+  inStock: boolean;
+  numberOfStock: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-const productSchema = new Schema(
+const productSchema = new Schema<IProduct>(
   {
     name: { type: String, required: true },
     brand: { type: String, required: true },
     category: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
-    image: { type: String, required: true }, 
-    sizes: [{ type: String }], 
+    image: [{ type: String, required: true }],
+    sizes: [{ type: String }],
     inStock: { type: Boolean, default: true },
+    numberOfStock: { type: Number, required: true },
   },
   { timestamps: true }
 );
-export const Product = mongoose.model<IProduct>("Product", productSchema);
+
+export const Product =
+  mongoose.models.IProduct || mongoose.model("Product", productSchema);
