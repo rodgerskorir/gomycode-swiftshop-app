@@ -4,14 +4,14 @@ import {
   useEffect,
   type ReactNode,
 } from "react";
-import type { Product, CartItem } from "../../types/Product";
+import type { CartItem } from "../../types/Product";
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (product: Product) => void;
-  removeFromCart: (productId: number, selectedSize?: string) => void;
+  addToCart: (item: CartItem) => void;
+  removeFromCart: (productId: string, selectedSize?: string) => void;
   updateQuantity: (
-    productId: number,
+    productId: string,
     newQuantity: number,
     selectedSize?: string
   ) => void;
@@ -38,33 +38,35 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("swiftshop-cart", JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product: Product) => {
+  const addToCart = (item: CartItem) => {
     setCart((prev) => {
       const existing = prev.find(
-        (item) =>
-          item.id === product.id && item.selectedSize === product.selectedSize
+        (p) => p._id === item._id && p.selectedSize === item.selectedSize
       );
+
       if (existing) {
-        return prev.map((item) =>
-          item.id === product.id && item.selectedSize === product.selectedSize
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+        return prev.map((p) =>
+          p._id === item._id && p.selectedSize === item.selectedSize
+            ? { ...p, quantity: p.quantity + item.quantity }
+            : p
         );
       }
-      return [...prev, { ...product, quantity: 1 }];
+
+      return [...prev, item];
     });
   };
 
-  const removeFromCart = (productId: number, selectedSize?: string) => {
+  const removeFromCart = (productId: string, selectedSize?: string) => {
     setCart((prev) =>
       prev.filter(
-        (item) => !(item.id === productId && item.selectedSize === selectedSize)
+        (item) =>
+          !(item._id === productId && item.selectedSize === selectedSize)
       )
     );
   };
 
   const updateQuantity = (
-    productId: number,
+    productId: string,
     newQuantity: number,
     selectedSize?: string
   ) => {
@@ -72,7 +74,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setCart((prev) =>
       prev.map((item) =>
-        item.id === productId && item.selectedSize === selectedSize
+        item._id === productId && item.selectedSize === selectedSize
           ? { ...item, quantity: newQuantity }
           : item
       )

@@ -2,15 +2,11 @@ import { useAuth } from "../../context/AuthContext";
 import { Navigate, Outlet } from "react-router-dom";
 
 export default function RequireAuth({ adminOnly = false }: { adminOnly?: boolean }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (!user) {
-    return <Navigate to="/" replace />; // not logged in
-  }
+  if (loading) return null;
+  if (!user) return <Navigate to="/" replace />;
+  if (adminOnly && user.role !== "admin") return <Navigate to="/" replace />;
 
-  if (adminOnly && user.role !== "admin") {
-    return <Navigate to="/" replace />; // not admin
-  }
-
-  return <Outlet />; // allow access
+  return <Outlet />;
 }

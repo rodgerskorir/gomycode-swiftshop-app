@@ -1,5 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { X } from "lucide-react";
+import { toast } from "react-toastify";
 
 interface User {
   _id: string;
@@ -15,18 +16,46 @@ interface EditUserModalProps {
   onUpdate: (updatedUser: User) => void;
 }
 
-export default function EditUserModal({ user, onClose, onUpdate }: EditUserModalProps) {
+export default function EditUserModal({
+  user,
+  onClose,
+  onUpdate,
+}: EditUserModalProps) {
   const [form, setForm] = useState<User>(user);
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    onUpdate(form);
-    onClose();
+    setLoading(true);
+
+    try {
+      const res = await fetch(`http://localhost:5000/swiftshop/users/${form._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to update user");
+      }
+
+      toast.success("User updated successfully.");
+      onUpdate(data.data); // updated user object from server
+      onClose();
+    } catch (err: any) {
+      toast.error(err.message || "Update failed.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -74,9 +103,10 @@ export default function EditUserModal({ user, onClose, onUpdate }: EditUserModal
 
           <button
             type="submit"
+            disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md"
           >
-            Save Changes
+            {loading ? "Saving..." : "Save Changes"}
           </button>
         </form>
       </div>

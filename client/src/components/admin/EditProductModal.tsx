@@ -1,6 +1,7 @@
 import { useState, type FormEvent, type ChangeEvent } from "react";
 import { X } from "lucide-react";
 import type { Product } from "../../types/Product";
+import { toast } from "react-toastify";
 
 interface EditProductModalProps {
   product: Product;
@@ -8,30 +9,74 @@ interface EditProductModalProps {
   onUpdate: (updatedProduct: Product) => void;
 }
 
-export default function EditProductModal({ product, onClose, onUpdate }: EditProductModalProps) {
+export default function EditProductModal({
+  product,
+  onClose,
+  onUpdate,
+}: EditProductModalProps) {
   const [form, setForm] = useState<Product>(product);
   const [preview, setPreview] = useState<string>(product.image[0]);
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: name === "price" || name === "numberOfStock" ? Number(value) : value,
+    }));
   };
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const objectUrl = URL.createObjectURL(file);
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      const objectUrl = URL.createObjectURL(selectedFile);
       setPreview(objectUrl);
-      setForm((prev) => ({ ...prev, image: [objectUrl] }));
+      setFile(selectedFile);
     }
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    onUpdate(form);
-    onClose();
+    setLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("brand", form.brand);
+      formData.append("category", form.category);
+      formData.append("description", form.description);
+      formData.append("price", form.price.toString());
+      formData.append("numberOfStock", form.numberOfStock.toString());
+      formData.append("sizes", form.sizes.join(","));
+
+      if (file) {
+        formData.append("images", file);
+      }
+
+      const res = await fetch(
+        `http://localhost:5000/swiftshop/products/${form._id}`,
+        {
+          method: "PUT",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to update product");
+      }
+
+    
+      onUpdate(data.data);
+      onClose();
+    } catch (err: any) {
+      toast.error(err.message || "Update failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -50,72 +95,84 @@ export default function EditProductModal({ product, onClose, onUpdate }: EditPro
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
-            type="text"
             name="name"
-            placeholder="Product Name"
             value={form.name}
             onChange={handleChange}
+            placeholder="Product Name"
             required
-            className="w-full px-4 py-2 border rounded-md text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           />
 
           <input
-            type="text"
             name="brand"
-            placeholder="Brand"
             value={form.brand}
             onChange={handleChange}
+            placeholder="Brand"
             required
-            className="w-full px-4 py-2 border rounded-md text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           />
 
           <input
-            type="text"
             name="category"
-            placeholder="Category"
             value={form.category}
             onChange={handleChange}
+            placeholder="Category"
             required
-            className="w-full px-4 py-2 border rounded-md text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          />
+
+          <textarea
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            placeholder="Description"
+            required
+            className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           />
 
           <input
-            type="number"
             name="price"
-            placeholder="Price"
+            type="number"
             value={form.price}
             onChange={handleChange}
+            placeholder="Price"
             required
-            className="w-full px-4 py-2 border rounded-md text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           />
 
-          {/* Image Upload */}
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-              Product Image
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="w-full text-sm text-gray-700 dark:text-gray-200 file:mr-4 file:py-2 file:px-4
-                         file:rounded-md file:border-0 file:text-sm file:font-semibold
-                         file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          <input
+            name="numberOfStock"
+            type="number"
+            value={form.numberOfStock}
+            onChange={handleChange}
+            placeholder="Stock Quantity"
+            required
+            className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          />
+
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Product Image
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
+          {preview && (
+            <img
+              src={preview}
+              alt="Preview"
+              className="mt-2 h-28 object-cover rounded border dark:border-gray-700"
             />
-            {preview && (
-              <img
-                src={preview}
-                alt="Preview"
-                className="mt-2 h-28 object-cover rounded border dark:border-gray-700"
-              />
-            )}
-          </div>
+          )}
 
           <button
             type="submit"
+            disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md"
           >
-            Update Product
+            {loading ? "Updating..." : "Update Product"}
           </button>
         </form>
       </div>

@@ -4,33 +4,53 @@ import Navbar from "../../components/navbar/Navbar";
 import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 import Footer from "../../components/footer/Footer";
 import type { Product } from "../../types/Product";
-import { productData } from "../../data/products";
-import { AuthContext } from "../../context/AuthContext"; // 👈 Import AuthContext
-
-const allBrands = [
-  "Brand-All",
-  ...Array.from(new Set(productData.map((p) => p.brand))),
-];
-const allCategories = [
-  "Category-All",
-  ...Array.from(new Set(productData.map((p) => p.category))),
-];
+import { AuthContext } from "../../context/AuthContext";
 
 export default function ProductsPage() {
-  const { user } = useContext(AuthContext); // 👈 Get user from context
+  const { user } = useContext(AuthContext);
 
-  const [products, setProducts] = useState<Product[]>(productData);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [brand, setBrand] = useState("Brand-All");
   const [category, setCategory] = useState("Category-All");
 
+  const [brands, setBrands] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const filtered = productData.filter(
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/swiftshop/products");
+        const data = await res.json();
+        if (data.success) {
+          const products: Product[] = data.data;
+          setAllProducts(products);
+          setFilteredProducts(products);
+
+          const uniqueBrands = Array.from(new Set(products.map((p) => p.brand)));
+          const uniqueCategories = Array.from(new Set(products.map((p) => p.category)));
+          setBrands(["Brand-All", ...uniqueBrands]);
+          setCategories(["Category-All", ...uniqueCategories]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    const filtered = allProducts.filter(
       (p) =>
         (brand === "Brand-All" || p.brand === brand) &&
         (category === "Category-All" || p.category === category)
     );
-    setProducts(filtered);
-  }, [brand, category]);
+    setFilteredProducts(filtered);
+  }, [brand, category, allProducts]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -52,7 +72,7 @@ export default function ProductsPage() {
             onChange={(e) => setBrand(e.target.value)}
             className="px-4 py-2 border rounded-md bg-white"
           >
-            {allBrands.map((b) => (
+            {brands.map((b) => (
               <option key={b} value={b}>
                 {b}
               </option>
@@ -64,7 +84,7 @@ export default function ProductsPage() {
             onChange={(e) => setCategory(e.target.value)}
             className="px-4 py-2 border rounded-md bg-white"
           >
-            {allCategories.map((c) => (
+            {categories.map((c) => (
               <option key={c} value={c}>
                 {c}
               </option>
@@ -73,13 +93,12 @@ export default function ProductsPage() {
         </div>
 
         {/* Product Grid */}
-        {products.length > 0 ? (
+        {loading ? (
+          <p className="text-center text-gray-500">Loading products...</p>
+        ) : filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <ProductCard
-                key={`${product.id}-${product.name}`}
-                product={product}
-              />
+            {filteredProducts.map((product) => (
+              <ProductCard key={product._id} product={product} />
             ))}
           </div>
         ) : (

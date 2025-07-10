@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
+import { toast } from "react-toastify";
 
 interface Order {
   _id: string;
@@ -12,6 +13,7 @@ interface Order {
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -19,8 +21,9 @@ export default function AdminOrdersPage() {
         const res = await fetch("http://localhost:5000/swiftshop/orders");
         const data = await res.json();
         if (data.success) setOrders(data.data);
-      } catch (err) {
-        console.error("Failed to fetch orders:", err);
+        else throw new Error(data.message || "Failed to fetch orders");
+      } catch (err: any) {
+        toast.error(err.message || "Failed to load orders.");
       }
     };
 
@@ -28,16 +31,26 @@ export default function AdminOrdersPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
+    const confirm = window.confirm("Are you sure you want to delete this order?");
+    if (!confirm) return;
+
+    setLoadingId(id);
     try {
       const res = await fetch(`http://localhost:5000/swiftshop/orders/${id}`, {
         method: "DELETE",
       });
       const data = await res.json();
-      if (data.success) {
-        setOrders((prev) => prev.filter((order) => order._id !== id));
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to delete order");
       }
-    } catch (err) {
-      console.error("Failed to delete order:", err);
+
+      setOrders((prev) => prev.filter((order) => order._id !== id));
+      toast.success("Order deleted successfully");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete order.");
+    } finally {
+      setLoadingId(null);
     }
   };
 
@@ -77,12 +90,12 @@ export default function AdminOrdersPage() {
                   <td className="p-3">
                     <span
                       className={`inline-block px-2 py-1 text-xs rounded-full font-medium
-                    ${
-                      order.status === "Pending"
-                        ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-                        : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                    }
-                  `}
+                        ${
+                          order.status === "Pending"
+                            ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+                            : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                        }
+                      `}
                     >
                       {order.status}
                     </span>
@@ -90,7 +103,12 @@ export default function AdminOrdersPage() {
                   <td className="p-3">
                     <button
                       onClick={() => handleDelete(order._id)}
-                      className="inline-flex items-center justify-center p-2 rounded-md bg-red-500 hover:bg-red-600 text-white"
+                      disabled={loadingId === order._id}
+                      className={`inline-flex items-center justify-center p-2 rounded-md text-white ${
+                        loadingId === order._id
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-red-500 hover:bg-red-600"
+                      }`}
                     >
                       <Trash2 size={16} />
                     </button>

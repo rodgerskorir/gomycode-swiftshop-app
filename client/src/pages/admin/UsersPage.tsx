@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Edit, Trash2, UserPlus } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import EditUserModal from "../../components/admin/EditUserModal";
+import { toast } from "react-toastify"; // ✅ import toast
 
 interface User {
   _id: string;
@@ -27,6 +28,7 @@ export default function AdminUsersPage() {
         }
       } catch (err) {
         console.error("Failed to fetch users:", err);
+        toast.error("Failed to fetch users.");
       } finally {
         setLoading(false);
       }
@@ -35,9 +37,26 @@ export default function AdminUsersPage() {
     fetchUsers();
   }, []);
 
-  const handleDelete = (id: string) => {
-    setUsers((prev) => prev.filter((user) => user._id !== id));
-    // Optionally: Send DELETE request to API
+  const handleDelete = async (id: string) => {
+    const confirm = window.confirm("Are you sure you want to delete this user?");
+    if (!confirm) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/swiftshop/users/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to delete user.");
+      }
+
+      setUsers((prev) => prev.filter((user) => user._id !== id));
+      toast.success("User deleted successfully.");
+    } catch (err: any) {
+      console.error("Delete error:", err);
+      toast.error(err.message || "Failed to delete user.");
+    }
   };
 
   const handleUpdateUser = (updated: User) => {
@@ -79,7 +98,9 @@ export default function AdminUsersPage() {
                     <td className="p-4 font-medium">{user.name}</td>
                     <td className="p-4">{user.email}</td>
                     <td className="p-4 capitalize">{user.role}</td>
-                    <td className="p-4">{new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td className="p-4">
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </td>
                     <td className="p-4 text-right space-x-2">
                       <button
                         onClick={() => {
@@ -117,7 +138,7 @@ export default function AdminUsersPage() {
 
       {showEditModal && selectedUser && (
         <EditUserModal
-          user={selectedUser} // ✅ FIXED: was `users={selectedUser}`
+          user={selectedUser}
           onClose={() => setShowEditModal(false)}
           onUpdate={handleUpdateUser}
         />

@@ -7,6 +7,7 @@ import { productRouter } from "./routes/productRoute";
 import { receiptRouter } from "./routes/receiptRoute";
 import { orderRouter } from "./routes/orderRoute";
 import { contactRouter } from "./routes/contactRoute";
+import path from "path";
 
 // Load .env variables
 config();
@@ -34,6 +35,7 @@ app.use("/swiftshop/products", productRouter); //product route
 app.use("/swiftshop/receipts", receiptRouter); //receipt route
 app.use("/swiftshop/orders", orderRouter); //order route
 app.use("/swiftshop/contacts", contactRouter); //contact/message route
+app.use("uploads/", express.static(path.join(__dirname, "../uploads")));
 
 // Catch-all route for invalid paths
 app.use((req: Request, res: Response) => {

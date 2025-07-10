@@ -11,17 +11,11 @@ export default function ProtectedRoute({
   children,
   adminOnly = false,
 }: ProtectedRouteProps) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (!user) {
-    // Not logged in, redirect to homepage (or show login modal if you're doing that)
-    return <Navigate to="/" replace />;
-  }
-
-  if (adminOnly && user.role !== "admin") {
-    // Logged in but not admin
-    return <Navigate to="/" replace />;
-  }
+  if (loading) return null;
+  if (!user) return <Navigate to="/" replace />;
+  if (adminOnly && user.role !== "admin") return <Navigate to="/" replace />;
 
   return children;
 }

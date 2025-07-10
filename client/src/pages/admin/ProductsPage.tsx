@@ -4,6 +4,7 @@ import AdminSidebar from "../../components/admin/AdminSidebar";
 import AddProductModal from "../../components/admin/AddProductModal";
 import EditProductModal from "../../components/admin/EditProductModal";
 import type { Product } from "../../types/Product";
+import { toast } from "react-toastify";
 
 const allBrands = ["Brand-All", "Nike", "Adidas", "Puma"];
 const allCategories = ["Category-All", "Sneakers", "Running", "Casual"];
@@ -15,38 +16,51 @@ export default function AdminProductsPage() {
   const [showModal, setShowModal] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
 
-  // Fetch from backend
   useEffect(() => {
     fetch("http://localhost:5000/swiftshop/products")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
           setProducts(data.data);
+        } else {
+          toast.error("Failed to fetch products.");
         }
       })
-      .catch((err) => console.error("Failed to fetch products", err));
+      .catch((err) => {
+        console.error("Failed to fetch products", err);
+        toast.error("Failed to fetch products");
+      });
   }, []);
 
-  // Filter logic
   const filtered = products.filter(
     (p) =>
       (brand === "Brand-All" || p.brand === brand) &&
       (category === "Category-All" || p.category === category)
   );
 
-  // Delete product
   const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) {
+      return;
+    }
+
     try {
-      const res = await fetch(`http://localhost:5000/swiftshop/products/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `http://localhost:5000/swiftshop/products/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       const data = await res.json();
       if (data.success) {
         setProducts((prev) => prev.filter((p) => p._id !== id));
+        toast.success("Product deleted successfully");
+      } else {
+        toast.error("Failed to delete product");
       }
     } catch (err) {
       console.error("Delete failed", err);
+      toast.error("Error deleting product");
     }
   };
 
@@ -67,7 +81,6 @@ export default function AdminProductsPage() {
           </button>
         </div>
 
-        {/* Filters */}
         <div className="flex flex-wrap gap-4 mb-6">
           <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
             Filter products by brand or category
@@ -94,7 +107,6 @@ export default function AdminProductsPage() {
           </select>
         </div>
 
-        {/* Product Table */}
         <div className="overflow-x-auto rounded-lg shadow border dark:border-gray-700">
           <table className="min-w-full text-sm">
             <thead className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
@@ -104,7 +116,7 @@ export default function AdminProductsPage() {
                 <th className="text-left p-3">Brand</th>
                 <th className="text-left p-3">Category</th>
                 <th className="text-left p-3">Price</th>
-                <th className="text-left p-3">Stock</th>                
+                <th className="text-left p-3">Stock</th>
                 <th className="text-left p-3">Actions</th>
               </tr>
             </thead>
@@ -116,7 +128,7 @@ export default function AdminProductsPage() {
                 >
                   <td className="p-3">
                     <img
-                      src={p.image[0]}
+                      src={`http://localhost:5000${p.image[0]}`}
                       alt={p.name}
                       className="w-12 h-12 object-cover rounded"
                     />
@@ -157,13 +169,13 @@ export default function AdminProductsPage() {
         </div>
       </main>
 
-      {/* Modals */}
       {showModal && (
         <AddProductModal
           onClose={() => setShowModal(false)}
           onSave={(product: Product) => {
             setProducts((prev) => [...prev, product]);
             setShowModal(false);
+            toast.success("Product added successfully");
           }}
         />
       )}
@@ -177,6 +189,7 @@ export default function AdminProductsPage() {
               prev.map((p) => (p._id === updated._id ? updated : p))
             );
             setEditProduct(null);
+            toast.success("Product updated successfully");
           }}
         />
       )}

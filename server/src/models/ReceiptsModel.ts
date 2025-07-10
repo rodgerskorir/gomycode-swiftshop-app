@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-export interface IReceipt extends Document {
+export interface IReceipt  {
   orderId: mongoose.Types.ObjectId;
   amount: number;
   paymentMethod: string;
