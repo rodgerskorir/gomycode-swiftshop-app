@@ -8,6 +8,8 @@ interface ProductCardProps {
   product: Product;
 }
 
+const BASE_URL = import.meta.env.VITE_API_URL as string;
+
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useContext(CartContext);
 
@@ -16,9 +18,27 @@ export default function ProductCard({ product }: ProductCardProps) {
     : product.price;
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent default Link behavior
-    addToCart({ ...product, selectedSize: product.sizes?.[0] || "Default" });
+    e.preventDefault();
+    addToCart({
+      ...product,
+      selectedSize: product.sizes?.[0] || "Default",
+      quantity: 1,
+    });
   };
+
+  // Safe image handling
+  const getImagePath = () => {
+    if (typeof product.image === "string") return product.image;
+    if (Array.isArray(product.image) && product.image.length > 0) {
+      const img = product.image[0];
+      return img.startsWith("http")
+        ? img
+        : `${BASE_URL}/${img.replace(/^\/+/, "")}`;
+    }
+    return "/assets/images/default.png";
+  };
+
+  const imagePath = getImagePath();
 
   return (
     <div className="relative bg-white rounded-xl shadow hover:shadow-lg transition duration-200 overflow-hidden">
@@ -29,16 +49,19 @@ export default function ProductCard({ product }: ProductCardProps) {
         </span>
       )}
 
-      <Link to={`/products/${product.id}`}>
+      <Link to={`/products/${product._id}`}>
         <img
-          src={product.image[0] || "/assets/images/default.png"}
+          src={imagePath}
           alt={product.name}
           className="w-full h-48 object-cover object-center"
+          onError={(e) =>
+            (e.currentTarget.src = "/assets/images/default.png")
+          }
         />
       </Link>
 
       <div className="p-4">
-        <Link to={`/products/${product.id}`}>
+        <Link to={`/products/${product._id}`}>
           <h3 className="text-lg font-bold text-gray-900 hover:text-blue-600">
             {product.name}
           </h3>
@@ -61,7 +84,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Buttons */}
         <div className="mt-4 flex justify-between items-center gap-2">
           <Link
-            to={`/products/${product.id}`}
+            to={`/products/${product._id}`}
             className="flex-1 bg-black text-white py-2 px-4 rounded hover:bg-blue-600 transition text-sm text-center"
           >
             View Item

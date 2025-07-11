@@ -9,14 +9,54 @@ import {
 import Navbar from "../../components/navbar/Navbar";
 import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 import Footer from "../../components/footer/Footer";
-import { useAuth } from "../../context/AuthContext"; // ✅ Use auth context
+import { useAuth } from "../../context/AuthContext";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function ContactPage() {
-  const { user } = useAuth(); // ✅ Get reactive user
+  const { user } = useAuth();
+  const API = import.meta.env.VITE_API_URL;
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch(`${API}/contacts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok || !result.success) {
+        throw new Error(result.message || "Failed to send message");
+      }
+
+      toast.success("Message sent successfully!");
+      setFormData({ name: "", email: "", message: "" });
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
-      {user ? <LoggedInNavbar /> : <Navbar />} {/* ✅ Dynamic navbar */}
+      {user ? <LoggedInNavbar /> : <Navbar />}
       <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl font-bold text-center text-gray-800 mb-12">
@@ -25,7 +65,10 @@ export default function ContactPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {/* Contact Form */}
-            <form className="bg-white p-8 rounded-xl shadow-md space-y-6">
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white p-8 rounded-xl shadow-md space-y-6"
+            >
               <div>
                 <label
                   htmlFor="name"
@@ -35,8 +78,11 @@ export default function ContactPage() {
                 </label>
                 <input
                   id="name"
+                  name="name"
                   type="text"
                   required
+                  value={formData.name}
+                  onChange={handleChange}
                   className="mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -50,8 +96,11 @@ export default function ContactPage() {
                 </label>
                 <input
                   id="email"
+                  name="email"
                   type="email"
                   required
+                  value={formData.email}
+                  onChange={handleChange}
                   className="mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -65,25 +114,27 @@ export default function ContactPage() {
                 </label>
                 <textarea
                   id="message"
+                  name="message"
                   rows={5}
                   required
+                  value={formData.message}
+                  onChange={handleChange}
                   className="mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
                 ></textarea>
               </div>
 
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className="w-full bg-black text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition"
               >
-                Send Message
+                {isSubmitting ? "Sending..." : "Send Message"}
               </button>
             </form>
 
             {/* Contact Info */}
             <div className="bg-white p-8 rounded-xl shadow-md space-y-6">
-              <h2 className="text-2xl font-semibold text-gray-800">
-                Our Store
-              </h2>
+              <h2 className="text-2xl font-semibold text-gray-800">Our Store</h2>
 
               <div className="flex items-center gap-4 text-gray-600">
                 <MapPin className="w-5 h-5 text-red-500" />

@@ -5,6 +5,7 @@ import AddProductModal from "../../components/admin/AddProductModal";
 import EditProductModal from "../../components/admin/EditProductModal";
 import type { Product } from "../../types/Product";
 import { toast } from "react-toastify";
+import { getProductImage } from "../../utils/getProductImage"; // ✅ Import util
 
 const allBrands = ["Brand-All", "Nike", "Adidas", "Puma"];
 const allCategories = ["Category-All", "Sneakers", "Running", "Casual"];
@@ -128,9 +129,12 @@ export default function AdminProductsPage() {
                 >
                   <td className="p-3">
                     <img
-                      src={`http://localhost:5000${p.image[0]}`}
+                      src={getProductImage(p.image)} // ✅ Use utility
                       alt={p.name}
                       className="w-12 h-12 object-cover rounded"
+                      onError={(e) =>
+                        (e.currentTarget.src = "/assets/images/default.png")
+                      }
                     />
                   </td>
                   <td className="p-3 font-medium">{p.name}</td>

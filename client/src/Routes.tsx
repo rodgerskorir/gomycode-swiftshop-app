@@ -18,6 +18,8 @@ import AdminProductsPage from "./pages/admin/ProductsPage";
 import AdminUsersPage from "./pages/admin/UsersPage";
 import RevenuePage from "./pages/admin/RevenuePage";
 import AdminOrdersPage from "./pages/admin/OrdersPage";
+import AdminOrderDetailsPage from "./pages/admin/AdminOrderDetailsPage";
+
 
 // Cart & checkout
 import CartPage from "./pages/shop/CartPage";
@@ -114,6 +116,17 @@ export default function AppRoutes() {
           <ProtectedRoute>
 
             <AdminOrdersPage />
+          </ProtectedRoute>
+         
+        }
+      />
+
+      <Route
+        path="/admin/orders/:id"
+        element={
+          <ProtectedRoute>
+
+            <AdminOrderDetailsPage />
           </ProtectedRoute>
          
         }

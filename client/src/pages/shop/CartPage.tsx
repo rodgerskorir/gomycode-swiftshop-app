@@ -54,7 +54,7 @@ export default function CartPage() {
             <div className="lg:col-span-2">
               <ul className="divide-y divide-gray-200">
                 {cart.map((item) => (
-                  <li key={`${item.id}-${item.selectedSize}`} className="py-6 flex">
+                  <li key={`${item._id}-${item.selectedSize}`} className="py-6 flex">
                     <div className="flex-shrink-0 w-24 h-24 border rounded-md overflow-hidden">
                       <img src={item.image[0]} alt={item.name} className="w-full h-full object-cover" />
                     </div>
@@ -72,7 +72,7 @@ export default function CartPage() {
                       <div className="flex-1 flex items-end justify-between mt-4">
                         <div className="flex items-center border rounded-md">
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1, item.selectedSize)}
+                            onClick={() => updateQuantity(item._id, item.quantity - 1, item.selectedSize)}
                             disabled={item.quantity <= 1}
                             className={`px-3 py-1 bg-gray-100 hover:bg-gray-200 ${
                               item.quantity <= 1 ? "text-gray-400 cursor-not-allowed" : "text-gray-700"
@@ -82,14 +82,14 @@ export default function CartPage() {
                           </button>
                           <span className="px-4 py-1 border-x w-12 text-center">{item.quantity}</span>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1, item.selectedSize)}
+                            onClick={() => updateQuantity(item._id, item.quantity + 1, item.selectedSize)}
                             className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700"
                           >
                             +
                           </button>
                         </div>
                         <button
-                          onClick={() => removeFromCart(item.id, item.selectedSize)}
+                          onClick={() => removeFromCart(item._id, item.selectedSize)}
                           className="flex items-center text-sm text-red-600 hover:text-red-500"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

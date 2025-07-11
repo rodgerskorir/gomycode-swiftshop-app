@@ -3,8 +3,10 @@ import ProductCard from "../../components/shop/ProductCard";
 import Navbar from "../../components/navbar/Navbar";
 import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 import Footer from "../../components/footer/Footer";
-import type { Product } from "../../types/Product";
 import { AuthContext } from "../../context/AuthContext";
+import type { Product } from "../../types/Product";
+
+const BASE_URL = import.meta.env.VITE_API_URL as string;
 
 export default function ProductsPage() {
   const { user } = useContext(AuthContext);
@@ -13,25 +15,30 @@ export default function ProductsPage() {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [brand, setBrand] = useState("Brand-All");
   const [category, setCategory] = useState("Category-All");
-
   const [brands, setBrands] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:5000/swiftshop/products");
+        const res = await fetch(`${BASE_URL}/products`);
         const data = await res.json();
+
         if (data.success) {
           const products: Product[] = data.data;
+
           setAllProducts(products);
           setFilteredProducts(products);
 
           const uniqueBrands = Array.from(new Set(products.map((p) => p.brand)));
           const uniqueCategories = Array.from(new Set(products.map((p) => p.category)));
+
           setBrands(["Brand-All", ...uniqueBrands]);
           setCategories(["Category-All", ...uniqueCategories]);
+        } else {
+          console.error("API error:", data.message);
         }
       } catch (err) {
         console.error("Failed to fetch products:", err);
@@ -43,6 +50,7 @@ export default function ProductsPage() {
     fetchProducts();
   }, []);
 
+  // Apply filters
   useEffect(() => {
     const filtered = allProducts.filter(
       (p) =>
@@ -54,7 +62,6 @@ export default function ProductsPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      {/* Conditional navbar */}
       {user ? <LoggedInNavbar /> : <Navbar />}
 
       <main className="flex-1 px-4 sm:px-6 py-8">
@@ -92,7 +99,7 @@ export default function ProductsPage() {
           </select>
         </div>
 
-        {/* Product Grid */}
+        {/* Products */}
         {loading ? (
           <p className="text-center text-gray-500">Loading products...</p>
         ) : filteredProducts.length > 0 ? (

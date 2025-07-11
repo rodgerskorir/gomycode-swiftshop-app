@@ -9,7 +9,7 @@ interface Props {
 export default function SimilarProductCard({ product }: Props) {
   return (
     <Link
-      to={`/products/${product.id}`}
+      to={`/products/${product._id}`}
       className="border rounded-lg p-3 text-sm hover:shadow transition block"
     >
       <img

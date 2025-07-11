@@ -1,16 +1,17 @@
-import bcrypt from "bcrypt";
-import { Router, Request, Response, NextFunction, response } from "express";
+import { Router } from "express";
+import { loginUser, uploadAvatar } from "../controllers/userController";
 import { Users } from "../models/UsersModel";
-import { loginUser } from "../controllers/userController";
+import bcrypt from "bcrypt";
+import { upload } from "../middleware/multer"; // multer config
 
 const router = Router();
 
-//Regiter //POST
+//  Register User - POST /swiftshop/users/
 router.post("/", async (req, res) => {
   try {
     const { name, email, username, phone, password, role } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10); // 🔐 Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await Users.create({
       name,
@@ -27,72 +28,69 @@ router.post("/", async (req, res) => {
   }
 });
 
-// POST /swiftshop/users/login
+//  Login - POST /swiftshop/users/login
 router.post("/login", loginUser);
 
-//GET /
+//  Upload Avatar - POST /swiftshop/users/upload
+router.post("/upload", upload.single("avatar"), uploadAvatar);
+
+//  Get All Users - GET /swiftshop/users/
 router.get("/", async (req, res) => {
   try {
     const fetchedUsers = await Users.find({});
     if (!fetchedUsers || !fetchedUsers.length)
-      res.status(404).json({ success: true, data: [] });
-    res.status(201).json({ success: true, data: fetchedUsers });
+      return res.status(404).json({ success: true, data: [] });
+
+    res.status(200).json({ success: true, data: fetchedUsers });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ success: false, error: "Error => " + error.message });
+    res.status(500).json({ success: false, error: "Error => " + error.message });
   }
 });
 
-//GET /:id
+//  Get Single User - GET /swiftshop/users/:id
 router.get("/:id", async (req, res) => {
   try {
-    const fetchedUser = await Users.findOne({ _id: req.params.id });
-    if (!fetchedUser) {
+    const fetchedUser = await Users.findById(req.params.id);
+    if (!fetchedUser)
       return res.status(404).json({ success: false, data: null });
-    }
 
-    return res.status(200).json({ success: true, data: fetchedUser });
+    res.status(200).json({ success: true, data: fetchedUser });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ success: false, error: "Error => " + error.message });
+    res.status(500).json({ success: false, error: "Error => " + error.message });
   }
 });
 
-//PUT /:id
+//  Update User - PUT /swiftshop/users/:id
 router.put("/:id", async (req, res) => {
   try {
     const updatedUser = await Users.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
+
     if (!updatedUser)
-      res
+      return res
         .status(404)
         .json({ success: false, error: "User with that id does not exist" });
-    res.status(201).json({ success: true, data: updatedUser });
+
+    res.status(200).json({ success: true, data: updatedUser });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ success: false, error: "Error => " + error.message });
+    res.status(500).json({ success: false, error: "Error => " + error.message });
   }
 });
 
-// DELETE / :id
+//  Delete User - DELETE /swiftshop/users/:id
 router.delete("/:id", async (req, res) => {
   try {
     const deletedUser = await Users.findByIdAndDelete(req.params.id);
     if (!deletedUser)
-      res
+      return res
         .status(404)
         .json({ success: false, error: "User with that id does not exist" });
-    res.status(201).json({ success: true, data: deletedUser });
+
+    res.status(200).json({ success: true, data: deletedUser });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ success: false, error: "Error => " + error.message });
+    res.status(500).json({ success: false, error: "Error => " + error.message });
   }
 });
-
 
 export { router as userRouter };

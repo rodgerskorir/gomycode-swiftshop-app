@@ -43,10 +43,10 @@ export default function LoginModal({ onClose, onSwitch }: Props) {
         return;
       }
 
-      login(data); // update AuthContext
+      login(data.user); // update AuthContext
       onClose();
 
-      // ✅ Redirect logic based on role
+      //  Redirect logic based on role
       if (data.user?.role === "admin") {
         navigate("/admin/");
       } else {

@@ -7,10 +7,10 @@ const router = Router();
 
 // === Multer Setup ===
 const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    cb(null, "uploads/");
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../../uploads")); // Save to /uploads
   },
-  filename: (_req, file, cb) => {
+  filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   },
 });
@@ -18,31 +18,50 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // === POST / - Create Product with image upload ===
-router.post("/", upload.array("images", 5), async (req, res) => {
+router.post("/", upload.array("images"), async (req, res) => {
   try {
-    const { name, brand, category, description, price, discount, sizes, numberOfStock } =
-      req.body;
-
-    const imageUrls = ((req.files as Express.Multer.File[]) || []).map(
-      (file) => `/uploads/${file.filename}`
-    );
-
-    const newProduct = await Product.create({
+    const {
       name,
       brand,
       category,
       description,
-      price: parseFloat(price),
-       discount: parseFloat(discount),
-      sizes: sizes.split(",").map((s: string) => s.trim()),
-      image: imageUrls,
-      numberOfStock: parseInt(numberOfStock),
+      price,
+      discount,
+      sizes,
+      numberOfStock,
+    } = req.body;
+
+    if (!req.files || req.files.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No images uploaded." });
+    }
+
+    // Build absolute URLs for images
+    const imageUrls = (req.files as Express.Multer.File[]).map((file) => {
+      return `${req.protocol}://${req.get("host")}/uploads/${file.filename}`;
     });
 
-    return res.status(201).json({ success: true, data: newProduct });
-  } catch (error: any) {
-    console.error("Product creation error:", error);
-    return res.status(500).json({ success: false, error: error.message });
+    const newProduct = new Product({
+      name,
+      brand,
+      category,
+      description,
+      price: Number(price),
+      sizes: sizes.split(",").map((s: string) => s.trim()),
+      numberOfStock: Number(numberOfStock),
+      image: imageUrls,
+      ...(discount !== undefined && discount !== ""
+        ? { discount: Number(discount) }
+        : {}),
+    });
+
+    const saved = await newProduct.save();
+
+    res.status(201).json({ success: true, data: saved });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Internal server error." });
   }
 });
 
@@ -55,7 +74,7 @@ router.put("/:id", upload.single("images"), async (req, res) => {
       category: req.body.category,
       description: req.body.description,
       price: parseFloat(req.body.price),
-       discount: parseFloat(req.body.discount),
+      discount: parseFloat(req.body.discount),
       numberOfStock: parseInt(req.body.numberOfStock),
       sizes: req.body.sizes.split(",").map((s: string) => s.trim()),
     };
@@ -71,12 +90,12 @@ router.put("/:id", upload.single("images"), async (req, res) => {
       return res.status(404).json({ success: false, message: "Not found" });
     res.json({ success: true, data: updated });
   } catch (err) {
-  console.error("Update error:", err);
+    console.error("Update error:", err);
 
-  const errorMessage =
-    err instanceof Error ? err.message : "Unknown error occurred";
+    const errorMessage =
+      err instanceof Error ? err.message : "Unknown error occurred";
 
-  res.status(500).json({ success: false, message: errorMessage });
+    res.status(500).json({ success: false, message: errorMessage });
   }
 });
 

@@ -1,52 +1,85 @@
-import { useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import Footer from "../../components/footer/Footer";
 import Navbar from "../../components/navbar/Navbar";
 import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 import { Link } from "react-router-dom";
-import { BadgeCheck, Clock, XCircle } from "lucide-react";
+import { BadgeCheck, Clock} from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
-import LoginModal from "../../components/auth/LoginModal"; // adjust path as needed
+import LoginModal from "../../components/auth/LoginModal";
 
 interface Order {
-  id: number;
-  date: string;
+  _id: string;
+  createdAt: string;
   total: number;
-  status: "Pending" | "Delivered" | "Cancelled";
+  status: "pending" | "paid" | "shipped" | "delivered";
 }
-
-const sampleOrders: Order[] = [
-  { id: 104, date: "2025-06-29", total: 12000, status: "Delivered" },
-  { id: 102, date: "2025-07-01", total: 8500, status: "Pending" },
-  { id: 103, date: "2025-06-20", total: 7500, status: "Cancelled" },
-  { id: 101, date: "2025-06-19", total: 6300, status: "Cancelled" },
-];
 
 export default function MyOrdersPage() {
   const { user } = useContext(AuthContext);
   const [showLogin, setShowLogin] = useState(!user);
-
-  const [orders] = useState<Order[]>(sampleOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<
-    "All" | "Pending" | "Delivered" | "Cancelled"
+    "All" | "pending" | "paid" | "shipped" | "delivered"
   >("All");
   const [sortOrder, setSortOrder] = useState<"Newest" | "Oldest">("Newest");
 
+  const API = import.meta.env.VITE_API_URL;
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchOrders = async () => {
+      try {
+        const res = await fetch(`${API}/orders`);
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          const userOrders = data.data.filter(
+            (order: any) => order.userId === user._id
+          );
+          setOrders(userOrders);
+        } else {
+          console.error("Failed to fetch orders");
+        }
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, [user]);
+
   const filteredOrders = orders
     .filter((order) =>
-      statusFilter === "All" ? true : order.status === statusFilter
+      statusFilter === "All"
+        ? true
+        : order.status.toLowerCase() === statusFilter.toLowerCase()
     )
     .sort((a, b) =>
       sortOrder === "Newest"
-        ? new Date(b.date).getTime() - new Date(a.date).getTime()
-        : new Date(a.date).getTime() - new Date(b.date).getTime()
+        ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     );
 
   if (!user) {
     return (
       <>
         <Navbar />
-        <LoginModal onClose={() => setShowLogin(false)} onSwitch={() => {}} />
+        {showLogin && (
+          <LoginModal onClose={() => setShowLogin(false)} onSwitch={() => {}} />
+        )}
       </>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <p className="text-gray-500">Loading orders...</p>
+      </div>
     );
   }
 
@@ -61,17 +94,23 @@ export default function MyOrdersPage() {
           <div className="flex flex-wrap gap-3">
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
+              onChange={(e) =>
+                setStatusFilter(e.target.value as typeof statusFilter)
+              }
               className="px-4 py-2 rounded-md border text-sm"
             >
               <option value="All">All Statuses</option>
-              <option value="Pending">Pending</option>
-              <option value="Delivered">Delivered</option>
-              <option value="Cancelled">Cancelled</option>
+              <option value="pending">Pending</option>
+              <option value="paid">Paid</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
             </select>
+
             <select
               value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value as any)}
+              onChange={(e) =>
+                setSortOrder(e.target.value as typeof sortOrder)
+              }
               className="px-4 py-2 rounded-md border text-sm"
             >
               <option value="Newest">Sort: Newest</option>
@@ -94,35 +133,40 @@ export default function MyOrdersPage() {
           <div className="space-y-6">
             {filteredOrders.map((order) => (
               <div
-                key={order.id}
+                key={order._id}
                 className="bg-white rounded-xl shadow-sm p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
               >
                 <div className="space-y-1">
                   <p className="text-lg font-semibold text-gray-900">
-                    Order #{order.id}
+                    Order #{order._id.slice(-6).toUpperCase()}
                   </p>
-                  <p className="text-sm text-gray-600">Date: {order.date}</p>
+                  <p className="text-sm text-gray-600">
+                    Date: {new Date(order.createdAt).toLocaleDateString()}
+                  </p>
                   <p className="text-sm text-gray-600">
                     Total: Ksh {order.total.toLocaleString()}
                   </p>
                   <span
                     className={`inline-flex items-center gap-1 px-3 py-1 text-sm rounded-full font-medium ${
-                      order.status === "Delivered"
+                      order.status === "delivered"
                         ? "bg-green-100 text-green-800"
-                        : order.status === "Pending"
+                        : order.status === "pending"
                         ? "bg-yellow-100 text-yellow-800"
-                        : "bg-red-100 text-red-700"
+                        : order.status === "shipped"
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-gray-200 text-gray-700"
                     }`}
                   >
-                    {order.status === "Delivered" && <BadgeCheck size={16} />}
-                    {order.status === "Pending" && <Clock size={16} />}
-                    {order.status === "Cancelled" && <XCircle size={16} />}
+                    {order.status === "delivered" && <BadgeCheck size={16} />}
+                    {order.status === "pending" && <Clock size={16} />}
+                    {order.status === "shipped" && <Clock size={16} />}
+                    {order.status === "paid" && <BadgeCheck size={16} />}
                     {order.status}
                   </span>
                 </div>
 
                 <Link
-                  to={`/my-orders/${order.id}`}
+                  to={`/my-orders/${order._id}`}
                   className="text-sm bg-black hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
                 >
                   View Details

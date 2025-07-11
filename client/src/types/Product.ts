@@ -6,12 +6,13 @@ export interface Product {
   description: string;
   price: number;
   discount: number;
-  image: string[];
+  image: string | string[];
   sizes: string[];
   inStock: boolean;
   numberOfStock: number;
   createdAt?: string;
   updatedAt?: string;
+  quantity: number;
 }
 
 export interface CartItem extends Product {

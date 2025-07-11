@@ -19,6 +19,7 @@ export default function AddProductModal({
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number>(0);
+  const [discount, setDiscount] = useState<number | undefined>();
   const [sizes, setSizes] = useState<string>("");
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [numberOfStock, setNumberOfStock] = useState<number>(0);
@@ -43,6 +44,10 @@ export default function AddProductModal({
       formData.append("category", category);
       formData.append("description", description);
       formData.append("price", price.toString());
+      if (discount !== undefined) {
+        formData.append("discount", discount.toString());
+      }
+
       formData.append("sizes", sizes);
       formData.append("numberOfStock", numberOfStock.toString());
 
@@ -56,11 +61,12 @@ export default function AddProductModal({
       });
 
       const result = await res.json();
-      if (!res.ok || !result.success)
+      if (!res.ok || !result.success) {
         throw new Error(result.message || "Failed to save product.");
+      }
 
       toast.success("Product added successfully!");
-      onSave(result.data); // ✅ Pass the new product to the parent
+      onSave(result.data);
       onSuccess?.();
       onClose();
     } catch (err: any) {
@@ -86,113 +92,77 @@ export default function AddProductModal({
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm mb-1 text-gray-700 dark:text-gray-300">
-              Product Name
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              required
-            />
-          </div>
+          <Input
+            label="Product Name"
+            value={name}
+            onChange={setName}
+            required
+          />
+          <Select
+            label="Brand"
+            value={brand}
+            onChange={setBrand}
+            required
+            options={[
+              "Nike",
+              "Adidas",
+              "Puma",
+              "New Balance",
+              "Reebok",
+              "Vans",
+              "Converse",
+              "Other",
+            ]}
+          />
+          <Select
+            label="Category"
+            value={category}
+            onChange={setCategory}
+            required
+            options={[
+              "Sneakers",
+              "Running",
+              "Casual",
+              "Slides",
+              "Formal",
+              "Boots",
+            ]}
+          />
+          <TextArea
+            label="Description"
+            value={description}
+            onChange={setDescription}
+            required
+          />
+          <Input
+            label="Price (Ksh)"
+            value={price}
+            onChange={setPrice}
+            type="number"
+            required
+          />
+          <Input
+            label="Discount (%)"
+            value={discount ?? ""}
+            onChange={(val) => setDiscount(val ? Number(val) : undefined)}
+            type="number"
+          />
+          <Input
+            label="Stock Quantity"
+            value={numberOfStock}
+            onChange={setNumberOfStock}
+            type="number"
+            required
+          />
+          <Input
+            label="Sizes"
+            value={sizes}
+            onChange={setSizes}
+            placeholder="e.g. 40, 41, 42"
+            required
+          />
 
-          <div>
-            <label className="block text-sm text-gray-600 dark:text-gray-300">
-              Brand
-              <select
-                value={brand}
-                onChange={(e) => setBrand(e.target.value)}
-                required
-                className="mt-1 w-full px-4 py-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              >
-                <option value="">Select brand</option>
-                <option value="Nike">Nike</option>
-                <option value="Adidas">Adidas</option>
-                <option value="Puma">Puma</option>
-                <option value="New Balance">New Balance</option>
-                <option value="Reebok">Reebok</option>
-                <option value="Vans">Vans</option>
-                <option value="Converse">Converse</option>
-                <option value="Other">Other</option>
-              </select>
-            </label>
-          </div>
-
-          <div>
-            <label className="block text-sm text-gray-600 dark:text-gray-300">
-              Category
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                required
-                className="mt-1 w-full px-4 py-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              >
-                <option value="">Select category</option>
-                <option value="Sneakers">Sneakers</option>
-                <option value="Running">Running</option>
-                <option value="Casual">Casual</option>
-                <option value="Slides">Slides</option>
-                <option value="Formal">Formal</option>
-                <option value="Boots">Boots</option>
-              </select>
-            </label>
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1 text-gray-700 dark:text-gray-300">
-              Description
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-4 py-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1 text-gray-700 dark:text-gray-300">
-              Price (Ksh)
-            </label>
-            <input
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-              className="w-full px-4 py-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1 text-gray-700 dark:text-gray-300">
-              Stock Quantity
-            </label>
-            <input
-              type="number"
-              value={numberOfStock}
-              onChange={(e) => setNumberOfStock(Number(e.target.value))}
-              className="w-full px-4 py-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1 text-gray-700 dark:text-gray-300">
-              Sizes
-            </label>
-            <input
-              type="text"
-              value={sizes}
-              onChange={(e) => setSizes(e.target.value)}
-              placeholder="e.g. 40, 41, 42"
-              className="w-full px-4 py-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              required
-            />
-          </div>
-
+          {/* Image Upload */}
           <div>
             <label className="block text-sm mb-1 text-gray-700 dark:text-gray-300">
               Upload Images
@@ -200,7 +170,7 @@ export default function AddProductModal({
             <input
               type="file"
               multiple
-              accept="images/*"
+              accept="image/*"
               onChange={handleImageChange}
               className="w-full text-sm text-gray-700 dark:text-gray-200 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
@@ -231,6 +201,104 @@ export default function AddProductModal({
           </div>
         </form>
       </div>
+    </div>
+  );
+}
+
+// Reusable controlled input component
+function Input({
+  label,
+  value,
+  onChange,
+  type = "text",
+  placeholder = "",
+  required = false,
+}: {
+  label: string;
+  value: string | number;
+  onChange: (val: any) => void;
+  type?: string;
+  placeholder?: string;
+  required?: boolean;
+}) {
+  return (
+    <div>
+      <label className="block text-sm mb-1 text-gray-700 dark:text-gray-300">
+        {label}
+      </label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) =>
+          onChange(type === "number" ? Number(e.target.value) : e.target.value)
+        }
+        placeholder={placeholder}
+        required={required}
+        className="w-full px-4 py-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+      />
+    </div>
+  );
+}
+
+// Reusable select component
+function Select({
+  label,
+  value,
+  onChange,
+  options,
+  required = false,
+}: {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  options: string[];
+  required?: boolean;
+}) {
+  return (
+    <div>
+      <label className="block text-sm text-gray-600 dark:text-gray-300">
+        {label}
+      </label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        required={required}
+        className="mt-1 w-full px-4 py-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+      >
+        <option value="">Select {label.toLowerCase()}</option>
+        {options.map((opt) => (
+          <option key={opt} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+// Reusable textarea
+function TextArea({
+  label,
+  value,
+  onChange,
+  required = false,
+}: {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  required?: boolean;
+}) {
+  return (
+    <div>
+      <label className="block text-sm mb-1 text-gray-700 dark:text-gray-300">
+        {label}
+      </label>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        required={required}
+        className="w-full px-4 py-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+      />
     </div>
   );
 }

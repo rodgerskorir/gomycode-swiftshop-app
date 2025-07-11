@@ -25,7 +25,12 @@ export default function EditProductModal({
     const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: name === "price" || name === "numberOfStock" ? Number(value) : value,
+      [name]:
+        name === "price" || name === "numberOfStock"
+          ? Number(value)
+          : name === "discount"
+          ? value === "" ? undefined : Number(value)
+          : value,
     }));
   };
 
@@ -52,6 +57,10 @@ export default function EditProductModal({
       formData.append("numberOfStock", form.numberOfStock.toString());
       formData.append("sizes", form.sizes.join(","));
 
+      if (form.discount !== undefined) {
+        formData.append("discount", form.discount.toString());
+      }
+
       if (file) {
         formData.append("images", file);
       }
@@ -69,7 +78,6 @@ export default function EditProductModal({
         throw new Error(data.message || "Failed to update product");
       }
 
-    
       onUpdate(data.data);
       onClose();
     } catch (err: any) {
@@ -80,8 +88,8 @@ export default function EditProductModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-xl p-6 relative">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-y-auto">
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-xl relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-red-500"
@@ -89,92 +97,103 @@ export default function EditProductModal({
           <X size={20} />
         </button>
 
-        <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
-          Edit Product
-        </h2>
+        <div className="p-6">
+          <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
+            Edit Product
+          </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            placeholder="Product Name"
-            required
-            className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          />
-
-          <input
-            name="brand"
-            value={form.brand}
-            onChange={handleChange}
-            placeholder="Brand"
-            required
-            className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          />
-
-          <input
-            name="category"
-            value={form.category}
-            onChange={handleChange}
-            placeholder="Category"
-            required
-            className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          />
-
-          <textarea
-            name="description"
-            value={form.description}
-            onChange={handleChange}
-            placeholder="Description"
-            required
-            className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          />
-
-          <input
-            name="price"
-            type="number"
-            value={form.price}
-            onChange={handleChange}
-            placeholder="Price"
-            required
-            className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          />
-
-          <input
-            name="numberOfStock"
-            type="number"
-            value={form.numberOfStock}
-            onChange={handleChange}
-            placeholder="Stock Quantity"
-            required
-            className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          />
-
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Product Image
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-          />
-          {preview && (
-            <img
-              src={preview}
-              alt="Preview"
-              className="mt-2 h-28 object-cover rounded border dark:border-gray-700"
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Product Name"
+              required
+              className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             />
-          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md"
-          >
-            {loading ? "Updating..." : "Update Product"}
-          </button>
-        </form>
+            <input
+              name="brand"
+              value={form.brand}
+              onChange={handleChange}
+              placeholder="Brand"
+              required
+              className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+
+            <input
+              name="category"
+              value={form.category}
+              onChange={handleChange}
+              placeholder="Category"
+              required
+              className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+
+            <textarea
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              placeholder="Description"
+              required
+              className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+
+            <input
+              name="price"
+              type="number"
+              value={form.price}
+              onChange={handleChange}
+              placeholder="Price"
+              required
+              className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+
+            <input
+              name="discount"
+              type="number"
+              value={form.discount ?? ""}
+              onChange={handleChange}
+              placeholder="Discount (%)"
+              className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+
+            <input
+              name="numberOfStock"
+              type="number"
+              value={form.numberOfStock}
+              onChange={handleChange}
+              placeholder="Stock Quantity"
+              required
+              className="w-full px-4 py-2 border rounded-md text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Product Image
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+            {preview && (
+              <img
+                src={preview}
+                alt="Preview"
+                className="mt-2 h-28 object-cover rounded border dark:border-gray-700"
+              />
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md"
+            >
+              {loading ? "Updating..." : "Update Product"}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

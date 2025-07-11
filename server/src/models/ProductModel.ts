@@ -22,7 +22,7 @@ const productSchema = new Schema<IProduct>(
     category: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
-     discount: { type: Number, required: true },
+     discount: { type: Number, required: false },
     image: [{ type: String, required: true }],
     sizes: [{ type: String }],
     inStock: { type: Boolean, default: true },
