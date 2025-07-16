@@ -63,6 +63,17 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// GET /user/:userId
+router.get("/user/:userId", async (req, res) => {
+  try {
+    const orders = await Order.find({ userId: req.params.userId }); // userId is assumed to be field in Order
+    return res.status(200).json({ success: true, data: orders });
+  } catch (error: any) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+
 //PUT /:id
 router.put("/:id", async (req, res) => {
   try {

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Plus, Edit, Trash2, Eye } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AddProductModal from "../../components/admin/AddProductModal";
 import EditProductModal from "../../components/admin/EditProductModal";
 import type { Product } from "../../types/Product";
 import { toast } from "react-toastify";
-import { getProductImage } from "../../utils/getProductImage"; // ✅ Import util
+import { getProductImage } from "../../utils/getProductImage";
 
 const allBrands = ["Brand-All", "Nike", "Adidas", "Puma"];
 const allCategories = ["Category-All", "Sneakers", "Running", "Casual"];
@@ -16,6 +17,7 @@ export default function AdminProductsPage() {
   const [category, setCategory] = useState("Category-All");
   const [showModal, setShowModal] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:5000/swiftshop/products")
@@ -129,7 +131,7 @@ export default function AdminProductsPage() {
                 >
                   <td className="p-3">
                     <img
-                      src={getProductImage(p.image)} // ✅ Use utility
+                      src={getProductImage(p.image)}
                       alt={p.name}
                       className="w-12 h-12 object-cover rounded"
                       onError={(e) =>
@@ -143,6 +145,12 @@ export default function AdminProductsPage() {
                   <td className="p-3">Ksh {p.price.toLocaleString()}</td>
                   <td className="p-3">{p.numberOfStock}</td>
                   <td className="p-3 space-x-2">
+                    <button
+                      onClick={() => navigate(`/admin/products/${p._id}`)}
+                      className="inline-flex items-center justify-center p-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white"
+                    >
+                      <Eye size={16} />
+                    </button>
                     <button
                       onClick={() => setEditProduct(p)}
                       className="inline-flex items-center justify-center p-2 rounded-md bg-yellow-400 hover:bg-yellow-500 text-white"

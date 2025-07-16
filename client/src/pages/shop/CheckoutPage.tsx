@@ -6,7 +6,6 @@ import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 import LoginModal from "../../components/auth/LoginModal";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import type { FullUser } from "../../types/User"; // NEW
 
 export default function CheckoutPage() {
   const { cart, clearCart } = useContext(CartContext);
@@ -14,7 +13,6 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
 
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [fullUser, setFullUser] = useState<FullUser | null>(null); // NEW
 
   const [form, setForm] = useState({
     name: "",
@@ -26,7 +24,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("mpesa");
   const [mpesaPhone, setMpesaPhone] = useState("");
 
-  const API = import.meta.env.VITE_API_URL; // NEW
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (!user) {
@@ -39,9 +37,7 @@ export default function CheckoutPage() {
         const res = await fetch(`${API}/users/${user._id}`);
         const data = await res.json();
         if (res.ok && data.success) {
-          const u: FullUser = data.data;
-          setFullUser(u);
-          // Prefill form with user profile data
+          const u = data.data;
           setForm({
             name: u.name || "",
             email: u.email || "",
@@ -69,54 +65,53 @@ export default function CheckoutPage() {
     0
   );
 
- const handlePlaceOrder = async () => {
-  if (!form.name || !form.email || !form.phone || !form.address) {
-    toast.error("Please fill in all fields.");
-    return;
-  }
-
-  if (cart.length === 0) {
-    toast.error("Your cart is empty.");
-    return;
-  }
-
-  const order = {
-    userId: user?._id,
-    items: cart.map((item) => ({
-      productId: item._id,
-      name: item.name,
-      quantity: item.quantity,
-      selectedSize: item.selectedSize,
-      price: item.price,
-    })),
-    total: subtotal,
-    status: "pending", 
-    shippingAddress: form.address,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/orders`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(order),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || "Failed to place order");
+  const handlePlaceOrder = async () => {
+    if (!form.name || !form.email || !form.phone || !form.address) {
+      toast.error("Please fill in all fields.");
+      return;
     }
 
-    toast.success("Order placed successfully!");
-    clearCart();
-    navigate("/order-success");
-  } catch (err: any) {
-    toast.error(err.message || "Something went wrong while placing order");
-  }
-};
+    if (cart.length === 0) {
+      toast.error("Your cart is empty.");
+      return;
+    }
 
+    const order = {
+      userId: user?._id,
+      items: cart.map((item) => ({
+        productId: item._id,
+        name: item.name,
+        quantity: item.quantity,
+        size: item.selectedSize,
+        price: item.price,
+      })),
+      total: subtotal,
+      status: "pending",
+      shippingAddress: form.address,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    try {
+      const res = await fetch(`${API}/orders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(order),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to place order");
+      }
+
+      toast.success("Order placed successfully!");
+      clearCart();
+      navigate("/order-success");
+    } catch (err: any) {
+      toast.error(err.message || "Something went wrong while placing order");
+    }
+  };
 
   if (!user) {
     return (

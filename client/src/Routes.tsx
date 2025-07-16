@@ -20,7 +20,6 @@ import RevenuePage from "./pages/admin/RevenuePage";
 import AdminOrdersPage from "./pages/admin/OrdersPage";
 import AdminOrderDetailsPage from "./pages/admin/AdminOrderDetailsPage";
 
-
 // Cart & checkout
 import CartPage from "./pages/shop/CartPage";
 import CheckoutPage from "./pages/shop/CheckoutPage";
@@ -30,9 +29,10 @@ import OrderSuccessPage from "./pages/shop/OrderSuccessPage";
 import NotFoundPage from "./pages/system/NotFoundPage";
 import ErrorPage from "./pages/system/ErrorPage";
 
-
 // Route guards
-import  ProtectedRoute  from "./components/auth/ProtectedRoute";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AdminProductDetailsPage from "./pages/admin/AdminProductDetailsPage";
+import AdminUserDetailsPage from "./pages/admin/AdminUserDetailsPage";
 
 export default function AppRoutes() {
   return (
@@ -75,7 +75,6 @@ export default function AppRoutes() {
         path="/admin"
         element={
           <ProtectedRoute>
-
             <AdminDashboard />
           </ProtectedRoute>
         }
@@ -84,40 +83,48 @@ export default function AppRoutes() {
         path="/admin/products"
         element={
           <ProtectedRoute>
-
             <AdminProductsPage />
           </ProtectedRoute>
-         
+        }
+      />
+      <Route
+        path="/admin/products/:id"
+        element={
+          <ProtectedRoute>
+            <AdminProductDetailsPage />
+          </ProtectedRoute>
         }
       />
       <Route
         path="/admin/revenue"
         element={
           <ProtectedRoute>
-
             <RevenuePage />
           </ProtectedRoute>
-         
         }
       />
       <Route
         path="/admin/users"
         element={
           <ProtectedRoute>
-
             <AdminUsersPage />
           </ProtectedRoute>
-         
+        }
+      />
+      <Route
+        path="/admin/users/:id"
+        element={
+          <ProtectedRoute>
+            <AdminUserDetailsPage />
+          </ProtectedRoute>
         }
       />
       <Route
         path="/admin/orders"
         element={
           <ProtectedRoute>
-
             <AdminOrdersPage />
           </ProtectedRoute>
-         
         }
       />
 
@@ -125,10 +132,8 @@ export default function AppRoutes() {
         path="/admin/orders/:id"
         element={
           <ProtectedRoute>
-
             <AdminOrderDetailsPage />
           </ProtectedRoute>
-         
         }
       />
 

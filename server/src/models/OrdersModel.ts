@@ -1,14 +1,16 @@
 import mongoose, { Schema } from "mongoose";
 
+export interface IOrderItem {
+  productId: mongoose.Types.ObjectId;
+  name: string;
+  price: number;
+  quantity: number;
+  size: string;
+}
+
 export interface IOrder extends Document {
   userId: mongoose.Types.ObjectId;
-  items: {
-    productId: mongoose.Types.ObjectId;
-    name: string;
-    price: number;
-    quantity: number;
-    size: string;
-  }[];
+  items: IOrderItem[];
   total: number;
   status: "pending" | "canceled" | "delivered";
   shippingAddress: string;
@@ -16,18 +18,21 @@ export interface IOrder extends Document {
   updatedAt?: Date;
 }
 
+const orderItemSchema = new Schema<IOrderItem>(
+  {
+    productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+    name: { type: String, required: true },
+    price: { type: Number, required: true },
+    quantity: { type: Number, required: true },
+    size: { type: String, required: true },
+  },
+  { _id: false }
+);
+
 const orderSchema = new Schema<IOrder>(
   {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "Users", required: true },
-    items: [
-      {
-        productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-        name: String,
-        price: Number,
-        quantity: Number,
-        size: String,
-      },
-    ],
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    items: { type: [orderItemSchema], required: true },
     total: { type: Number, required: true },
     status: {
       type: String,
@@ -38,5 +43,6 @@ const orderSchema = new Schema<IOrder>(
   },
   { timestamps: true }
 );
+
 
 export const Order = mongoose.models.IOrder || mongoose.model("Order", orderSchema)

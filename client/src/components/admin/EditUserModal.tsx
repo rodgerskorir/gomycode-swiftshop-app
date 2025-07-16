@@ -1,19 +1,12 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
-
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-  createdAt: string;
-}
+import type { FullUser } from "../../types/User";
 
 interface EditUserModalProps {
-  user: User;
+  user: FullUser;
   onClose: () => void;
-  onUpdate: (updatedUser: User) => void;
+  onUpdate: (updatedUser: FullUser) => void;
 }
 
 export default function EditUserModal({
@@ -21,7 +14,7 @@ export default function EditUserModal({
   onClose,
   onUpdate,
 }: EditUserModalProps) {
-  const [form, setForm] = useState<User>(user);
+  const [form, setForm] = useState<FullUser>(user);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (
@@ -36,11 +29,14 @@ export default function EditUserModal({
     setLoading(true);
 
     try {
-      const res = await fetch(`http://localhost:5000/swiftshop/users/${form._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      const res = await fetch(
+        `http://localhost:5000/swiftshop/users/${form._id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        }
+      );
 
       const data = await res.json();
 
@@ -49,7 +45,7 @@ export default function EditUserModal({
       }
 
       toast.success("User updated successfully.");
-      onUpdate(data.data); // updated user object from server
+      onUpdate(data.data); // Use updated user object
       onClose();
     } catch (err: any) {
       toast.error(err.message || "Update failed.");
@@ -68,7 +64,9 @@ export default function EditUserModal({
           <X size={20} />
         </button>
 
-        <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Edit User</h2>
+        <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
+          Edit User
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
@@ -82,12 +80,40 @@ export default function EditUserModal({
           />
 
           <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            value={form.username}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border rounded-md text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          />
+
+          <input
             type="email"
             name="email"
             placeholder="Email Address"
             value={form.email}
             onChange={handleChange}
             required
+            className="w-full px-4 py-2 border rounded-md text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          />
+
+          <input
+            type="text"
+            name="phone"
+            placeholder="Phone"
+            value={form.phone || ""}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-md text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          />
+
+          <input
+            type="text"
+            name="address"
+            placeholder="Address"
+            value={form.address || ""}
+            onChange={handleChange}
             className="w-full px-4 py-2 border rounded-md text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           />
 

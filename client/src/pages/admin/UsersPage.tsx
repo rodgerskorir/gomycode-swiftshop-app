@@ -1,15 +1,20 @@
 import { useEffect, useState } from "react";
-import { Edit, Trash2, UserPlus } from "lucide-react";
+import { Edit, Trash2, UserPlus, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import EditUserModal from "../../components/admin/EditUserModal";
-import { toast } from "react-toastify"; // ✅ import toast
+import { toast } from "react-toastify";
 
 interface User {
   _id: string;
   name: string;
+  username: string;
   email: string;
   role: string;
   createdAt: string;
+  phone?: string;
+  address?: string;
+  avatar?: string;
 }
 
 export default function AdminUsersPage() {
@@ -17,6 +22,7 @@ export default function AdminUsersPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -38,7 +44,9 @@ export default function AdminUsersPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    const confirm = window.confirm("Are you sure you want to delete this user?");
+    const confirm = window.confirm(
+      "Are you sure you want to delete this user?"
+    );
     if (!confirm) return;
 
     try {
@@ -69,7 +77,9 @@ export default function AdminUsersPage() {
 
       <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Users</h1>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+            Users
+          </h1>
           <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm">
             <UserPlus size={16} /> Add User
           </button>
@@ -103,17 +113,26 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="p-4 text-right space-x-2">
                       <button
+                        onClick={() => navigate(`/admin/users/${user._id}`)}
+                        className="inline-flex items-center justify-center p-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white"
+                        title="View"
+                      >
+                        <Eye size={16} />
+                      </button>
+                      <button
                         onClick={() => {
                           setSelectedUser(user);
                           setShowEditModal(true);
                         }}
                         className="inline-flex items-center justify-center p-2 rounded-md bg-yellow-400 hover:bg-yellow-500 text-white"
+                        title="Edit"
                       >
                         <Edit size={16} />
                       </button>
                       <button
                         onClick={() => handleDelete(user._id)}
                         className="inline-flex items-center justify-center p-2 rounded-md bg-red-500 hover:bg-red-600 text-white"
+                        title="Delete"
                       >
                         <Trash2 size={16} />
                       </button>
