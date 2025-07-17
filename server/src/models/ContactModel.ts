@@ -5,6 +5,7 @@ export interface IContact extends Document {
   email: string;
   message: string;
   createdAt?: Date;
+  isRead: Boolean;
 }
 
 const contactSchema = new Schema<IContact>(
@@ -12,6 +13,7 @@ const contactSchema = new Schema<IContact>(
     name: { type: String, required: true },
     email: { type: String, required: true },
     message: { type: String, required: true },
+    isRead: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

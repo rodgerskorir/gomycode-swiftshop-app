@@ -35,6 +35,8 @@ import AdminProductDetailsPage from "./pages/admin/AdminProductDetailsPage";
 import AdminUserDetailsPage from "./pages/admin/AdminUserDetailsPage";
 import ReceiptDetails from "./pages/admin/ReceiptDetails";
 import ResetPassword from "./components/auth/ResetPassword";
+import AdminMessagesPage from "./pages/admin/AdminMessagesPage";
+import AdminMessageDetail from "./pages/admin/AdminMessageDetail";
 
 export default function AppRoutes() {
   return (
@@ -45,7 +47,6 @@ export default function AppRoutes() {
       <Route path="/products/:id" element={<ProductDetailPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/about" element={<AboutPage />} />
-
       {/* User (protected) */}
       <Route
         path="/profile"
@@ -71,7 +72,6 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
-
       {/* Admin (admin only) */}
       <Route
         path="/admin"
@@ -113,7 +113,6 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/admin/users"
         element={
@@ -138,7 +137,6 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/admin/orders/:id"
         element={
@@ -147,25 +145,31 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
-
+      <Route
+        path="/admin/messages"
+        element={
+          <ProtectedRoute>
+            <AdminMessagesPage />
+          </ProtectedRoute>
+        }
+      />
+         <Route
+        path="/admin/messages/:id"
+        element={
+          <ProtectedRoute>
+            <AdminMessageDetail />
+          </ProtectedRoute>
+        }
+      />
       {/* Cart & Checkout */}
       <Route path="/cart" element={<CartPage />} />
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/order-success" element={<OrderSuccessPage />} />
-
       {/* System */}
       <Route path="/error" element={<ErrorPage />} />
       <Route path="*" element={<NotFoundPage />} />
-
-
-
-
       //reset password
       <Route path="/reset-password/:token" element={<ResetPassword />} />
-
     </Routes>
-
-
-
   );
 }

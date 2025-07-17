@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import axios from "axios"; 
+import axios from "axios";
 
 interface Props {
   onClose: () => void;
@@ -16,11 +16,37 @@ export default function RegisterModal({ onClose, onSwitch }: Props) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateInputs = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]{10,15}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+    if (!emailRegex.test(email)) {
+      return "Please enter a valid email address.";
+    }
+
+    if (!phoneRegex.test(phone)) {
+      return "Phone number must be between 10 to 15 digits.";
+    }
+
+    if (!passwordRegex.test(password)) {
+      return "Password must be at least 8 characters, include uppercase, lowercase, number, and symbol.";
+    }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      return "Passwords do not match.";
+    }
+
+    return null;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    const validationError = validateInputs();
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -34,13 +60,20 @@ export default function RegisterModal({ onClose, onSwitch }: Props) {
       });
 
       if (response.data.success) {
-        onClose();
+        onClose(); // Or maybe show login modal?
       } else {
-        setError("Registration failed. Try again.");
+        setError("Registration failed. Please try again.");
       }
     } catch (err: any) {
-      console.error(err);
-      setError(err.response?.data?.error || "Something went wrong");
+      const backendError = err.response?.data?.error?.toLowerCase() || "";
+
+      if (backendError.includes("username")) {
+        setError("Username is already taken.");
+      } else if (backendError.includes("email")) {
+        setError("An account with this email already exists.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -59,9 +92,7 @@ export default function RegisterModal({ onClose, onSwitch }: Props) {
           ✕
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-center text-black">
-          Sign Up to SwiftShop
-        </h2>
+        <h2 className="text-2xl font-bold mb-4 text-center text-black">Sign Up to SwiftShop</h2>
 
         {error && <p className="text-red-500 text-sm text-center mb-2">{error}</p>}
 
