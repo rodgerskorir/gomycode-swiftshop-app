@@ -3,6 +3,8 @@ import { loginUser, uploadAvatar } from "../controllers/userController";
 import { Users } from "../models/UsersModel";
 import bcrypt from "bcrypt";
 import { upload } from "../middleware/multer"; // multer config
+import { forgotPassword } from "../controllers/forgot-password";
+import { resetPassword } from "../controllers/resetPassword";
 
 const router = Router();
 
@@ -30,6 +32,10 @@ router.post("/", async (req, res) => {
 
 //  Login - POST /swiftshop/users/login
 router.post("/login", loginUser);
+
+router.post("/forgot-password", forgotPassword);
+
+router.post("/reset-password", resetPassword);
 
 //  Upload Avatar - POST /swiftshop/users/upload
 router.post("/upload", upload.single("avatar"), uploadAvatar);

@@ -33,6 +33,8 @@ import ErrorPage from "./pages/system/ErrorPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminProductDetailsPage from "./pages/admin/AdminProductDetailsPage";
 import AdminUserDetailsPage from "./pages/admin/AdminUserDetailsPage";
+import ReceiptDetails from "./pages/admin/ReceiptDetails";
+import ResetPassword from "./components/auth/ResetPassword";
 
 export default function AppRoutes() {
   return (
@@ -104,6 +106,15 @@ export default function AppRoutes() {
         }
       />
       <Route
+        path="/admin/revenue/:id"
+        element={
+          <ProtectedRoute>
+            <ReceiptDetails />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/admin/users"
         element={
           <ProtectedRoute>
@@ -145,6 +156,16 @@ export default function AppRoutes() {
       {/* System */}
       <Route path="/error" element={<ErrorPage />} />
       <Route path="*" element={<NotFoundPage />} />
+
+
+
+
+      //reset password
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
+
     </Routes>
+
+
+
   );
 }

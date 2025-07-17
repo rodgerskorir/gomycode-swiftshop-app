@@ -1,4 +1,6 @@
 import mongoose, { Schema } from "mongoose";
+import { Users } from "../models/UsersModel";
+
 
 export interface IOrderItem {
   productId: mongoose.Types.ObjectId;
@@ -31,7 +33,7 @@ const orderItemSchema = new Schema<IOrderItem>(
 
 const orderSchema = new Schema<IOrder>(
   {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "Users", required: true },
     items: { type: [orderItemSchema], required: true },
     total: { type: Number, required: true },
     status: {

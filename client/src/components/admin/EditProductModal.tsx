@@ -15,7 +15,9 @@ export default function EditProductModal({
   onUpdate,
 }: EditProductModalProps) {
   const [form, setForm] = useState<Product>(product);
-  const [preview, setPreview] = useState<string>(product.image[0]);
+  const [preview, setPreview] = useState<string>(
+    typeof product.image === "string" ? product.image : product.image?.[0] || ""
+  );
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -62,7 +64,13 @@ export default function EditProductModal({
       }
 
       if (file) {
+        // New image selected
         formData.append("images", file);
+      } else if (typeof product.image === "string") {
+        // No new image, send old one as string
+        formData.append("existingImage", product.image);
+      } else if (Array.isArray(product.image) && product.image.length > 0) {
+        formData.append("existingImage", product.image[0]);
       }
 
       const res = await fetch(

@@ -1,73 +1,76 @@
 import { Router } from "express";
 import { Receipt } from "../models/ReceiptsModel";
+import { Order } from "../models/OrdersModel";
+import { Users } from "../models/UsersModel"; 
+import { getReceiptById, getReceipts } from "../controllers/receiptsController";
 
 const router = Router();
-//POST
+
+// ============================
+// CREATE a receipt (POST /receipts)
+// ============================
 router.post("/", async (req, res) => {
   try {
-    const { orderId, amount, paymentMethod, status, createdAt } = req.body;
+    const { orderId, paymentMethod } = req.body;
 
-    const newReceipt = await Receipt.create({
-      orderId,
-      amount,
+    console.log("Creating receipt for orderId:", orderId, "with method:", paymentMethod);
+
+    if (!orderId || !paymentMethod) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing required fields: orderId or paymentMethod",
+      });
+    }
+
+    const order = await Order.findById(orderId).populate("userId", "name");
+    if (!order) {
+      console.error("Order not found for ID:", orderId);
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const receipt = await Receipt.create({
+      orderId: order._id,
+      userId: order.userId._id,
+      customerName: order.userId.name,
+      amount: order.total,
+      itemsCount: order.items.length,
       paymentMethod,
-      status,
-      createdAt,
+      status: "success",
     });
 
-    res.status(201).json({ success: true, data: newReceipt });
+    res.status(201).json({ success: true, data: receipt });
   } catch (error: any) {
+    console.error("Error creating receipt:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
+// ============================
+// GET all receipts (GET /receipts)
+// ============================
+router.get("/", getReceipts);  
 
-// POST
+// ============================
+// GET single receipt (GET /receipts/:id)
+// ============================
+router.get("/:id", getReceiptById);
 
-//GET /
-router.get("/", async (req, res) => {
-  try {
-    const fetchedReceipt = await Receipt.find({});
-    if (!fetchedReceipt || !fetchedReceipt.length)
-      res.status(404).json({ success: true, data: [] });
-    res.status(201).json({ success: true, data: fetchedReceipt });
-  } catch (error: any) {
-    res
-      .status(500)
-      .json({ success: false, error: "Error => " + error.message });
-  }
-});
-
-//GET /:id
-router.get("/:id", async (req, res) => {
-  try {
-    const fetchedReceipt = await Receipt.findOne({ _id: req.params.id });
-    if (!fetchedReceipt) {
-      return res.status(404).json({ success: false, data: null });
-    }
-
-    return res.status(200).json({ success: true, data: fetchedReceipt });
-  } catch (error: any) {
-    res
-      .status(500)
-      .json({ success: false, error: "Error => " + error.message });
-  }
-});
-
-//PUT /:id
+// ============================
+// UPDATE receipt (PUT /receipts/:id)
+// ============================
 router.put("/:id", async (req, res) => {
   try {
     const updatedReceipt = await Receipt.findByIdAndUpdate(
       req.params.id,
       req.body,
-      {
-        new: true,
-      }
+      { new: true }
     );
-    if (!updatedReceipt)
-      res
+    if (!updatedReceipt) {
+      return res
         .status(404)
-        .json({ success: false, error: "Receipt with that id does not exist" });
-    res.status(201).json({ success: true, data: updatedReceipt });
+        .json({ success: false, error: "Receipt not found" });
+    }
+
+    res.status(200).json({ success: true, data: updatedReceipt });
   } catch (error: any) {
     res
       .status(500)
@@ -75,15 +78,19 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// DELETE / :id
+// ============================
+// DELETE receipt (DELETE /receipts/:id)
+// ============================
 router.delete("/:id", async (req, res) => {
   try {
     const deletedReceipt = await Receipt.findByIdAndDelete(req.params.id);
-    if (!deletedReceipt)
-      res
+    if (!deletedReceipt) {
+      return res
         .status(404)
-        .json({ success: false, error: "Receipt with that id does not exist" });
-    res.status(201).json({ success: true, data: deletedReceipt });
+        .json({ success: false, error: "Receipt not found" });
+    }
+
+    res.status(200).json({ success: true, data: deletedReceipt });
   } catch (error: any) {
     res
       .status(500)

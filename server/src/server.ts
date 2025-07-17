@@ -29,7 +29,7 @@ app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Welcome to backend" });
 });
 
-// Register user routes (e.g., /swiftshop/users/register, /swiftshop/users/login)
+// Register user routes
 app.use("/swiftshop/users", userRouter);
 app.use("/swiftshop/products", productRouter); //product route
 app.use("/swiftshop/receipts", receiptRouter); //receipt route

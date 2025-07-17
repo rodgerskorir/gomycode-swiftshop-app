@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { AuthContext } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom"; // ✅ Add navigation
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   onClose: () => void;
@@ -12,15 +12,18 @@ export default function LoginModal({ onClose, onSwitch }: Props) {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [forgotMode, setForgotMode] = useState(false);
 
   const { login } = useContext(AuthContext);
-  const navigate = useNavigate(); // ✅ React Router hook
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+    setMessage("");
 
     const isEmail = identifier.includes("@");
     const payload = {
@@ -39,21 +42,41 @@ export default function LoginModal({ onClose, onSwitch }: Props) {
 
       if (!res.ok) {
         setError(data.error || "Login failed");
-        setIsLoading(false);
         return;
       }
 
-      login(data.user); // update AuthContext
+      login(data.user);
       onClose();
-
-      //  Redirect logic based on role
-      if (data.user?.role === "admin") {
-        navigate("/admin/");
-      } else {
-        navigate("/");
-      }
-    } catch (err) {
+      navigate(data.user?.role === "admin" ? "/admin/" : "/");
+    } catch {
       setError("Something went wrong. Try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgot = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setMessage("");
+    setIsLoading(true);
+
+    try {
+      const res = await fetch("http://localhost:5000/swiftshop/users/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: identifier }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Request failed");
+        return;
+      }
+
+      setMessage("Reset link sent! Check your email.");
+    } catch {
+      setError("Server error. Try again.");
     } finally {
       setIsLoading(false);
     }
@@ -74,15 +97,21 @@ export default function LoginModal({ onClose, onSwitch }: Props) {
           ✕
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-center text-black">Login</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center text-black">
+          {forgotMode ? "Reset Password" : "Login"}
+        </h2>
 
-        {error && (
-          <p className="text-red-500 text-sm text-center mb-2">{error}</p>
+        {(error || message) && (
+          <p className={`text-center text-sm mb-2 ${error ? "text-red-500" : "text-green-600"}`}>
+            {error || message}
+          </p>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={forgotMode ? handleForgot : handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm mb-1">Email or Username</label>
+            <label className="block text-sm mb-1">
+              {forgotMode ? "Email address" : "Email or Username"}
+            </label>
             <input
               type="text"
               className="w-full px-4 py-2 rounded-md bg-gray-100"
@@ -91,35 +120,69 @@ export default function LoginModal({ onClose, onSwitch }: Props) {
               required
             />
           </div>
-          <div>
-            <label className="block text-sm mb-1">Password</label>
-            <input
-              type="password"
-              className="w-full px-4 py-2 rounded-md bg-gray-100"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+
+          {!forgotMode && (
+            <div>
+              <label className="block text-sm mb-1">Password</label>
+              <input
+                type="password"
+                className="w-full px-4 py-2 rounded-md bg-gray-100"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={isLoading}
             className={`w-full py-2 rounded-md text-white ${
-              isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-black hover:bg-blue-700"
+              isLoading ? "bg-gray-400" : "bg-black hover:bg-blue-700"
             }`}
           >
-            {isLoading ? "Logging in..." : "Log In"}
+            {isLoading
+              ? "Processing..."
+              : forgotMode
+              ? "Send Reset Link"
+              : "Log In"}
           </button>
         </form>
 
+        {!forgotMode && (
+          <p className="text-xs mt-2 text-right">
+            <button
+              className="text-blue-500 hover:underline"
+              onClick={() => {
+                setForgotMode(true);
+                setError("");
+                setMessage("");
+              }}
+            >
+              Forgot password?
+            </button>
+          </p>
+        )}
+
         <p className="text-sm mt-4 text-center">
-          Don't have an account?{" "}
-          <button
-            onClick={onSwitch}
-            className="text-blue-500 hover:underline font-bold"
-          >
-            Register Now
-          </button>
+          {forgotMode ? (
+            <button
+              className="text-blue-500 hover:underline"
+              onClick={() => setForgotMode(false)}
+            >
+              Back to login
+            </button>
+          ) : (
+            <>
+              Don't have an account?{" "}
+              <button
+                onClick={onSwitch}
+                className="text-blue-500 hover:underline font-bold"
+              >
+                Register Now
+              </button>
+            </>
+          )}
         </p>
       </motion.div>
     </div>
