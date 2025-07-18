@@ -54,9 +54,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           src={imagePath}
           alt={product.name}
           className="w-full h-48 object-cover object-center"
-          onError={(e) =>
-            (e.currentTarget.src = "/assets/images/default.png")
-          }
+          onError={(e) => (e.currentTarget.src = "/assets/images/default.png")}
         />
       </Link>
 
@@ -68,6 +66,10 @@ export default function ProductCard({ product }: ProductCardProps) {
         </Link>
         <p className="text-sm text-gray-500">{product.brand}</p>
         <p className="text-sm text-gray-400">{product.category}</p>
+        {/* description */}
+        <p className="text-sm text-gray-600 line-clamp-2 mt-1">
+          {product.description}
+        </p>
 
         {/* Price */}
         <div className="mt-2 flex items-center justify-between">

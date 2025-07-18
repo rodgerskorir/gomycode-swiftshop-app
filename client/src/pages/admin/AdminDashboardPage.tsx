@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
-import AdminDashboard from "../../components/admin/AdminDashboard"; // Use the extracted component
-
+import AdminDashboard from "../../components/admin/AdminDashboard";
 
 export default function AdminDashboardPage() {
   const [orders, setOrders] = useState([]);
@@ -33,9 +32,14 @@ export default function AdminDashboardPage() {
   }, []);
 
   return (
-    <div className="flex min-h-screen">
-      <AdminSidebar />
-      <main className="flex-1 p-8 bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Sidebar stacks on top on small screens, horizontal on md+ */}
+      <div className="w-full md:w-64 shrink-0">
+        <AdminSidebar />
+      </div>
+
+      {/* Main content grows to fill space */}
+      <main className="flex-1 p-4 sm:p-6 md:p-8 bg-gray-100 dark:bg-gray-900">
         <AdminDashboard orders={orders} users={users} products={products} />
       </main>
     </div>

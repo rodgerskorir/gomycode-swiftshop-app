@@ -3,7 +3,7 @@ import Footer from "../../components/footer/Footer";
 import Navbar from "../../components/navbar/Navbar";
 import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 import { Link } from "react-router-dom";
-import { BadgeCheck, Clock} from "lucide-react";
+import { BadgeCheck, Clock } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 import LoginModal from "../../components/auth/LoginModal";
 
@@ -19,9 +19,7 @@ export default function MyOrdersPage() {
   const [showLogin, setShowLogin] = useState(!user);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<
-    "All" | "pending" | "paid" | "shipped" | "delivered"
-  >("All");
+  const [statusFilter, setStatusFilter] = useState<"All" | "pending" | "paid" | "shipped" | "delivered">("All");
   const [sortOrder, setSortOrder] = useState<"Newest" | "Oldest">("Newest");
 
   const API = import.meta.env.VITE_API_URL;
@@ -35,9 +33,7 @@ export default function MyOrdersPage() {
         const data = await res.json();
 
         if (res.ok && data.success) {
-          const userOrders = data.data.filter(
-            (order: any) => order.userId === user._id
-          );
+          const userOrders = data.data.filter((order: any) => order.userId === user._id);
           setOrders(userOrders);
         } else {
           console.error("Failed to fetch orders");
@@ -54,9 +50,7 @@ export default function MyOrdersPage() {
 
   const filteredOrders = orders
     .filter((order) =>
-      statusFilter === "All"
-        ? true
-        : order.status.toLowerCase() === statusFilter.toLowerCase()
+      statusFilter === "All" ? true : order.status.toLowerCase() === statusFilter.toLowerCase()
     )
     .sort((a, b) =>
       sortOrder === "Newest"
@@ -68,9 +62,7 @@ export default function MyOrdersPage() {
     return (
       <>
         <Navbar />
-        {showLogin && (
-          <LoginModal onClose={() => setShowLogin(false)} onSwitch={() => {}} />
-        )}
+        {showLogin && <LoginModal onClose={() => setShowLogin(false)} onSwitch={() => {}} />}
       </>
     );
   }
@@ -87,17 +79,15 @@ export default function MyOrdersPage() {
     <div className="flex flex-col min-h-screen bg-gray-50">
       <LoggedInNavbar />
 
-      <main className="flex-grow px-4 py-10 max-w-4xl mx-auto w-full">
+      <main className="flex-grow px-4 py-10 w-full max-w-6xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <h1 className="text-2xl font-bold text-gray-800">My Orders</h1>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <select
               value={statusFilter}
-              onChange={(e) =>
-                setStatusFilter(e.target.value as typeof statusFilter)
-              }
-              className="px-4 py-2 rounded-md border text-sm"
+              onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
+              className="px-4 py-2 rounded-md border text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="All">All Statuses</option>
               <option value="pending">Pending</option>
@@ -108,10 +98,8 @@ export default function MyOrdersPage() {
 
             <select
               value={sortOrder}
-              onChange={(e) =>
-                setSortOrder(e.target.value as typeof sortOrder)
-              }
-              className="px-4 py-2 rounded-md border text-sm"
+              onChange={(e) => setSortOrder(e.target.value as typeof sortOrder)}
+              className="px-4 py-2 rounded-md border text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="Newest">Sort: Newest</option>
               <option value="Oldest">Sort: Oldest</option>
@@ -136,8 +124,8 @@ export default function MyOrdersPage() {
                 key={order._id}
                 className="bg-white rounded-xl shadow-sm p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
               >
-                <div className="space-y-1">
-                  <p className="text-lg font-semibold text-gray-900">
+                <div className="space-y-1 w-full">
+                  <p className="text-lg font-semibold text-gray-900 break-all">
                     Order #{order._id.slice(-6).toUpperCase()}
                   </p>
                   <p className="text-sm text-gray-600">
@@ -167,7 +155,7 @@ export default function MyOrdersPage() {
 
                 <Link
                   to={`/my-orders/${order._id}`}
-                  className="text-sm bg-black hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
+                  className="text-sm bg-black hover:bg-blue-700 text-white px-4 py-2 rounded-md transition w-full sm:w-auto text-center"
                 >
                   View Details
                 </Link>

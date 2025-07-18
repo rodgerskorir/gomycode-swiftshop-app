@@ -18,33 +18,29 @@ export default function AdminMessagesPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
- useEffect(() => {
-  fetch("http://localhost:5000/swiftshop/contacts")
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success) {
-        const sorted = data.data.sort(
-          (a: Contact, b: Contact) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-        setContacts(sorted);
-      } else {
-        toast.error("Failed to fetch messages");
-      }
-    })
-    .catch(() => toast.error("Could not load messages"))
-    .finally(() => setLoading(false));
-}, []);
-
+  useEffect(() => {
+    fetch("http://localhost:5000/swiftshop/contacts")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          const sorted = data.data.sort(
+            (a: Contact, b: Contact) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+          setContacts(sorted);
+        } else {
+          toast.error("Failed to fetch messages");
+        }
+      })
+      .catch(() => toast.error("Could not load messages"))
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await fetch(
-        `http://localhost:5000/swiftshop/contacts/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const res = await fetch(`http://localhost:5000/swiftshop/contacts/${id}`, {
+        method: "DELETE",
+      });
       const data = await res.json();
       if (data.success) {
         setContacts((prev) => prev.filter((msg) => msg._id !== id));
@@ -58,30 +54,30 @@ export default function AdminMessagesPage() {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <AdminSidebar />
+    <div className="min-h-screen flex flex-col md:flex-row">
+      <div className="w-full md:w-64">
+        <AdminSidebar />
+      </div>
 
-      <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+      <main className="flex-1 p-4 sm:p-6 bg-gray-100 dark:bg-gray-900">
+        <div className="flex justify-between items-start sm:items-center mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">
             Contact Messages
           </h1>
         </div>
 
         {loading ? (
-          <p className="text-gray-500 dark:text-gray-300">
-            Loading messages...
-          </p>
+          <p className="text-gray-500 dark:text-gray-300">Loading messages...</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white dark:bg-gray-800 border rounded-md">
-              <thead>
-                <tr className="text-left text-sm text-gray-500 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
-                  <th className="p-4">Name</th>
-                  <th className="p-4">Email</th>
-                  <th className="p-4">Message</th>
-                  <th className="p-4">Date</th>
-                  <th className="p-4 text-right">Actions</th>
+          <div className="overflow-x-auto rounded-lg shadow border border-gray-200 dark:border-gray-700">
+            <table className="min-w-full text-sm">
+              <thead className="bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <tr>
+                  <th className="text-left p-3">Name</th>
+                  <th className="text-left p-3 hidden md:table-cell">Email</th>
+                  <th className="text-left p-3 hidden md:table-cell">Message</th>
+                  <th className="text-left p-3">Date</th>
+                  <th className="text-left p-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -89,32 +85,27 @@ export default function AdminMessagesPage() {
                   contacts.map((msg) => (
                     <tr
                       key={msg._id}
-                      className={`text-sm border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800
-    ${
-      !msg.isRead
-        ? "bg-yellow-100 dark:bg-yellow-900 font-semibold"
-        : "text-gray-700 dark:text-gray-200"
-    }`}
+                      onClick={() => navigate(`/admin/messages/${msg._id}`)}
+                      className={`cursor-pointer border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition 
+                        ${
+                          !msg.isRead
+                            ? "bg-yellow-100 dark:bg-yellow-900 font-semibold"
+                            : "text-gray-800 dark:text-white"
+                        }`}
                     >
-                      <td className="p-4 font-medium">{msg.name}</td>
-                      <td className="p-4">{msg.email}</td>
-                      <td className="p-4 max-w-xs truncate">{msg.message}</td>
-                      <td className="p-4">
+                      <td className="p-3">{msg.name}</td>
+                      <td className="p-3 hidden md:table-cell">{msg.email}</td>
+                      <td className="p-3 hidden md:table-cell max-w-xs truncate">{msg.message}</td>
+                      <td className="p-3">
                         {new Date(msg.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="p-4 text-right space-x-2">
-                        <button
-                          onClick={() => navigate(`/admin/messages/${msg._id}`)}
-                          className="inline-flex items-center justify-center p-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white"
-                          title="View"
-                        >
-                          {/* <Eye size={16} /> */}
-                          View
-                        </button>
+                      <td
+                        className="p-3 text-left"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <button
                           onClick={() => handleDelete(msg._id)}
-                          className="inline-flex items-center justify-center p-2 rounded-md bg-red-500 hover:bg-red-600 text-white"
-                          title="Delete"
+                          className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -123,10 +114,7 @@ export default function AdminMessagesPage() {
                   ))
                 ) : (
                   <tr>
-                    <td
-                      colSpan={5}
-                      className="p-6 text-center text-gray-500 dark:text-gray-400"
-                    >
+                    <td colSpan={5} className="p-6 text-center text-gray-500 dark:text-gray-400">
                       No messages found.
                     </td>
                   </tr>

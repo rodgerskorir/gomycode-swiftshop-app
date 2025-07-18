@@ -95,10 +95,12 @@ export default function AdminMessageDetail() {
   if (!message) return null;
 
   return (
-    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
-      <AdminSidebar />
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100 dark:bg-gray-900">
+      <div className="w-full lg:w-1/5">
+        <AdminSidebar />
+      </div>
 
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-4 sm:p-6">
         <button
           onClick={() => navigate("/admin/messages")}
           className="mb-4 text-sm text-blue-500 hover:underline flex items-center"
@@ -107,8 +109,8 @@ export default function AdminMessageDetail() {
           Back to messages
         </button>
 
-        <div className="bg-white dark:bg-gray-800 shadow p-6 rounded-md">
-          <h2 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">
+        <div className="bg-white dark:bg-gray-800 shadow p-4 sm:p-6 rounded-md">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2 text-gray-800 dark:text-white">
             From: {message.name}
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
@@ -118,7 +120,7 @@ export default function AdminMessageDetail() {
             Date: {new Date(message.createdAt).toLocaleString()}
           </p>
 
-          <p className="text-gray-700 dark:text-gray-200 border p-4 rounded-md mb-6 bg-gray-50 dark:bg-gray-700">
+          <p className="text-gray-700 dark:text-gray-200 border p-4 rounded-md mb-6 bg-gray-50 dark:bg-gray-700 text-sm sm:text-base">
             {message.message}
           </p>
 
@@ -127,7 +129,7 @@ export default function AdminMessageDetail() {
               Reply
             </label>
             <textarea
-              className="w-full p-2 rounded border bg-white dark:bg-gray-800 dark:text-white"
+              className="w-full p-2 rounded border bg-white dark:bg-gray-800 dark:text-white text-sm sm:text-base"
               rows={4}
               value={reply}
               onChange={(e) => setReply(e.target.value)}
@@ -135,17 +137,17 @@ export default function AdminMessageDetail() {
             ></textarea>
           </div>
 
-          <div className="flex space-x-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={handleReply}
-              className="inline-flex items-center bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
+              className="inline-flex items-center justify-center bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
             >
               <Send size={16} className="mr-2" />
               Send Reply
             </button>
             <button
               onClick={handleDelete}
-              className="inline-flex items-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
+              className="inline-flex items-center justify-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
             >
               <Trash2 size={16} className="mr-2" />
               Delete

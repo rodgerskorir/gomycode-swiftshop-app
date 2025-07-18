@@ -15,11 +15,15 @@ export default function ProductsPage() {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [brand, setBrand] = useState("Brand-All");
   const [category, setCategory] = useState("Category-All");
+  const [searchTerm, setSearchTerm] = useState("");
   const [brands, setBrands] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch products
+  // Pagination
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -50,15 +54,32 @@ export default function ProductsPage() {
     fetchProducts();
   }, []);
 
-  // Apply filters
+  // Filtering
   useEffect(() => {
     const filtered = allProducts.filter(
       (p) =>
         (brand === "Brand-All" || p.brand === brand) &&
-        (category === "Category-All" || p.category === category)
+        (category === "Category-All" || p.category === category) &&
+        p.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
     setFilteredProducts(filtered);
-  }, [brand, category, allProducts]);
+    setCurrentPage(1); // Reset to first page on any filter change
+  }, [brand, category, searchTerm, allProducts]);
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -69,11 +90,8 @@ export default function ProductsPage() {
           Shop Sneakers
         </h1>
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 mb-10 text-sm">
-          <p className="text-gray-500 text-center sm:text-left">
-            Filter products by brand or category
-          </p>
+        {/* Filters and Search */}
+        <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 mb-6 text-sm">
           <select
             value={brand}
             onChange={(e) => setBrand(e.target.value)}
@@ -97,14 +115,32 @@ export default function ProductsPage() {
               </option>
             ))}
           </select>
+
+          <input
+            type="text"
+            placeholder="Search by name... Nike, Air, Retro..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-4 py-2 border rounded-md bg-white w-full sm:w-64"
+          />
+
+          <select
+            value={itemsPerPage}
+            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            className="px-4 py-2 border rounded-md bg-white"
+          >
+            <option value={10}>Show 10</option>
+            <option value={20}>Show 20</option>
+            <option value={30}>Show 30</option>
+          </select>
         </div>
 
         {/* Products */}
         {loading ? (
           <p className="text-center text-gray-500">Loading products...</p>
-        ) : filteredProducts.length > 0 ? (
+        ) : currentProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
+            {currentProducts.map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}
           </div>
@@ -126,12 +162,36 @@ export default function ProductsPage() {
                 onClick={() => {
                   setBrand("Brand-All");
                   setCategory("Category-All");
+                  setSearchTerm("");
                 }}
                 className="mt-4 px-4 py-2 bg-black hover:bg-blue-600 text-white rounded-md transition-colors"
               >
                 Reset Filters
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {filteredProducts.length > itemsPerPage && (
+          <div className="mt-8 flex justify-center items-center gap-4">
+            <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="text-gray-600">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
+            >
+              Next
+            </button>
           </div>
         )}
       </main>

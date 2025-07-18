@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import { toast } from "react-toastify";
+import { ArrowLeft } from "lucide-react";
 
 interface Item {
   productId: string;
@@ -28,6 +29,7 @@ interface Order {
 
 export default function AdminOrderDetailsPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [order, setOrder] = useState<Order | null>(null);
 
   useEffect(() => {
@@ -50,17 +52,32 @@ export default function AdminOrderDetailsPage() {
 
   if (!order) {
     return (
-      <div className="flex min-h-screen">
-        <AdminSidebar />
-        <main className="p-6 text-gray-700 dark:text-white">Loading...</main>
+      <div className="min-h-screen flex flex-col lg:flex-row">
+        <div className="w-full lg:w-64">
+          <AdminSidebar />
+        </div>
+        <main className="flex-1 p-6 text-gray-700 dark:text-white">
+          Loading...
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen">
-      <AdminSidebar />
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      <div className="w-full lg:w-64">
+        <AdminSidebar />
+      </div>
       <main className="flex-1 p-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+        {/* Back Link */}
+        <button
+          onClick={() => navigate("/admin/orders")}
+          className="flex items-center text-sm text-gray-700 dark:text-gray-300 mb-4 hover:text-black dark:hover:text-white"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          Back to Orders
+        </button>
+
         <h1 className="text-2xl font-bold mb-6">Order Details</h1>
 
         <div className="space-y-6">
