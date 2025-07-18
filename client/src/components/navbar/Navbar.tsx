@@ -29,12 +29,12 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <nav className="hidden md:flex gap-6 items-center font-medium">
-            <Link to="/" className="hover:text-blue-500">Home</Link>
-            <Link to="/products" className="hover:text-blue-500">Shop</Link>
-            <Link to="/about" className="hover:text-blue-500">About</Link>
-            <Link to="/contact" className="hover:text-blue-500">Contact</Link>
-            <button onClick={() => setShowLogin(true)} className="hover:text-blue-500">Login</button>
-            <button onClick={() => setShowRegister(true)} className="hover:text-blue-500">Sign Up</button>
+            <Link to="/" className="hover:text-blue-500">
+              Home
+            </Link>
+            <Link to="/products" className="hover:text-blue-500">
+              Shop
+            </Link>
             <Link to="/cart" className="relative hover:text-blue-500">
               <ShoppingCart className="w-5 h-5" />
               {cartCount > 0 && (
@@ -43,19 +43,50 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
+            <Link to="/about" className="hover:text-blue-500">
+              About
+            </Link>
+            <Link to="/contact" className="hover:text-blue-500">
+              Contact
+            </Link>
+            <button
+              onClick={() => setShowLogin(true)}
+              className="hover:text-blue-500"
+            >
+              Login
+            </button>
+            <button
+              onClick={() => setShowRegister(true)}
+              className="hover:text-blue-500"
+            >
+              Sign Up
+            </button>
+            
           </nav>
         </div>
 
         {/* Mobile nav */}
         {mobileMenuOpen && (
           <div className="md:hidden px-4 pb-4 space-y-2 font-medium">
-            <Link to="/" className="block hover:text-blue-500" onClick={() => setMobileMenuOpen(false)}>Home</Link>
-            <Link to="/products" className="block hover:text-blue-500" onClick={() => setMobileMenuOpen(false)}>Shop</Link>
-            <Link to="/about" className="block hover:text-blue-500" onClick={() => setMobileMenuOpen(false)}>About</Link>
-            <Link to="/contact" className="block hover:text-blue-500" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
-            <button onClick={() => { setShowLogin(true); setMobileMenuOpen(false); }} className="block hover:text-blue-500">Login</button>
-            <button onClick={() => { setShowRegister(true); setMobileMenuOpen(false); }} className="block hover:text-blue-500">Sign Up</button>
-            <Link to="/cart" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2 hover:text-blue-500">
+            <Link
+              to="/"
+              className="block hover:text-blue-500"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Home
+            </Link>
+            <Link
+              to="/products"
+              className="block hover:text-blue-500"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Shop
+            </Link>
+            <Link
+              to="/cart"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 hover:text-blue-500"
+            >
               <ShoppingCart className="w-5 h-5" />
               {cartCount > 0 && (
                 <span className="bg-yellow-400 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -64,6 +95,38 @@ export default function Navbar() {
               )}
               <span>Cart</span>
             </Link>
+            <Link
+              to="/about"
+              className="block hover:text-blue-500"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              About
+            </Link>
+            <Link
+              to="/contact"
+              className="block hover:text-blue-500"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Contact
+            </Link>
+            <button
+              onClick={() => {
+                setShowLogin(true);
+                setMobileMenuOpen(false);
+              }}
+              className="block hover:text-blue-500"
+            >
+              Login
+            </button>
+            <button
+              onClick={() => {
+                setShowRegister(true);
+                setMobileMenuOpen(false);
+              }}
+              className="block hover:text-blue-500"
+            >
+              Sign Up
+            </button>
           </div>
         )}
       </header>

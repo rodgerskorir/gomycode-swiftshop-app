@@ -10,7 +10,7 @@ import Navbar from "../../components/navbar/Navbar";
 import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 import Footer from "../../components/footer/Footer";
 import { useAuth } from "../../context/AuthContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function ContactPage() {
@@ -18,11 +18,37 @@ export default function ContactPage() {
   const API = import.meta.env.VITE_API_URL;
 
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    name: user?.username || "",
+    email: user?.email || "",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`${API}/users/${user._id}`);
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          const u = data.data;
+          setFormData((prev) => ({
+            ...prev,
+            name: u.name || "",
+            email: u.email || "",
+          }));
+        } else {
+          throw new Error("Failed to fetch user info");
+        }
+      } catch (err: any) {
+        toast.error(err.message || "Error fetching user data");
+      }
+    };
+
+    fetchUser();
+  }, [user, API]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -46,7 +72,11 @@ export default function ContactPage() {
       }
 
       toast.success("Message sent successfully!");
-      setFormData({ name: "", email: "", message: "" });
+      setFormData({
+        name: user?.username || "",
+        email: user?.email || "",
+        message: "",
+      });
     } catch (error: any) {
       toast.error(error.message || "Something went wrong");
     } finally {
@@ -83,7 +113,8 @@ export default function ContactPage() {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+                  
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100"
                 />
               </div>
 
@@ -101,7 +132,8 @@ export default function ContactPage() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+                 
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100"
                 />
               </div>
 

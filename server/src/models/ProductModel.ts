@@ -13,10 +13,12 @@ export interface IProduct extends Document {
   numberOfStock: number;
   createdAt?: Date;
   updatedAt?: Date;
+  
 }
 
 const productSchema = new Schema<IProduct>(
   {
+    
     name: { type: String, required: true },
     brand: { type: String, required: true },
     category: { type: String, required: true },

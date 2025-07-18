@@ -13,12 +13,7 @@ import MyOrdersPage from "./pages/user/MyOrdersPage";
 import OrderDetailPage from "./pages/user/OrderDetailPage";
 
 // Admin pages
-import AdminDashboard from "./pages/admin/Dashboard";
-import AdminProductsPage from "./pages/admin/ProductsPage";
-import AdminUsersPage from "./pages/admin/UsersPage";
-import RevenuePage from "./pages/admin/RevenuePage";
-import AdminOrdersPage from "./pages/admin/OrdersPage";
-import AdminOrderDetailsPage from "./pages/admin/AdminOrderDetailsPage";
+
 
 // Cart & checkout
 import CartPage from "./pages/shop/CartPage";
@@ -31,12 +26,20 @@ import ErrorPage from "./pages/system/ErrorPage";
 
 // Route guards
 import ProtectedRoute from "./components/auth/ProtectedRoute";
-import AdminProductDetailsPage from "./pages/admin/AdminProductDetailsPage";
-import AdminUserDetailsPage from "./pages/admin/AdminUserDetailsPage";
-import ReceiptDetails from "./pages/admin/ReceiptDetails";
+
 import ResetPassword from "./components/auth/ResetPassword";
+import AdminProductsPage from "./pages/admin/AdminProductsPage";
+import AdminProductDetailsPage from "./pages/admin/AdminProductDetailsPage";
+import AdminUsersPage from "./pages/admin/AdminUsersPage";
+import AdminUserDetailsPage from "./pages/admin/AdminUserDetailsPage";
+import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
+import AdminOrderDetailsPage from "./pages/admin/AdminOrderDetailsPage";
 import AdminMessagesPage from "./pages/admin/AdminMessagesPage";
 import AdminMessageDetail from "./pages/admin/AdminMessageDetail";
+import AdminRevenuePage from "./pages/admin/AdminRevenuePage";
+import AdminReceiptDetails from "./pages/admin/AdminReceiptDetails";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+
 
 export default function AppRoutes() {
   return (
@@ -77,7 +80,7 @@ export default function AppRoutes() {
         path="/admin"
         element={
           <ProtectedRoute>
-            <AdminDashboard />
+            <AdminDashboardPage />
           </ProtectedRoute>
         }
       />
@@ -101,7 +104,7 @@ export default function AppRoutes() {
         path="/admin/revenue"
         element={
           <ProtectedRoute>
-            <RevenuePage />
+            <AdminRevenuePage />
           </ProtectedRoute>
         }
       />
@@ -109,7 +112,7 @@ export default function AppRoutes() {
         path="/admin/revenue/:id"
         element={
           <ProtectedRoute>
-            <ReceiptDetails />
+            <AdminReceiptDetails />
           </ProtectedRoute>
         }
       />

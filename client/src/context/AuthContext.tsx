@@ -5,17 +5,11 @@ import {
   useContext,
   type ReactNode,
 } from "react";
-
-interface User {
-  _id: string;
-  username: string;
-  email: string;
-  role: "user" | "admin";
-}
+import type { FullUser } from "../types/User";
 
 interface AuthContextType {
-  user: User | null;
-  login: (userData: User) => void;
+  user: FullUser | null;
+  login: (userData: FullUser) => void;
   logout: () => void;
   loading: boolean;
 }
@@ -28,7 +22,7 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<FullUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
 
-  const login = (userData: User) => {
+  const login = (userData: FullUser) => {
     localStorage.setItem("swiftshop-user", JSON.stringify(userData));
     setUser(userData);
   };

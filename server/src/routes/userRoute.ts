@@ -2,9 +2,10 @@ import { Router } from "express";
 import { loginUser, uploadAvatar } from "../controllers/userController";
 import { Users } from "../models/UsersModel";
 import bcrypt from "bcrypt";
-import { upload } from "../middleware/multer"; // multer config
+
 import { forgotPassword } from "../controllers/forgot-password";
 import { resetPassword } from "../controllers/resetPassword";
+import { upload } from "../middleware/multer";
 
 const router = Router();
 
@@ -49,7 +50,9 @@ router.get("/", async (req, res) => {
 
     res.status(200).json({ success: true, data: fetchedUsers });
   } catch (error: any) {
-    res.status(500).json({ success: false, error: "Error => " + error.message });
+    res
+      .status(500)
+      .json({ success: false, error: "Error => " + error.message });
   }
 });
 
@@ -62,7 +65,9 @@ router.get("/:id", async (req, res) => {
 
     res.status(200).json({ success: true, data: fetchedUser });
   } catch (error: any) {
-    res.status(500).json({ success: false, error: "Error => " + error.message });
+    res
+      .status(500)
+      .json({ success: false, error: "Error => " + error.message });
   }
 });
 
@@ -80,7 +85,9 @@ router.put("/:id", async (req, res) => {
 
     res.status(200).json({ success: true, data: updatedUser });
   } catch (error: any) {
-    res.status(500).json({ success: false, error: "Error => " + error.message });
+    res
+      .status(500)
+      .json({ success: false, error: "Error => " + error.message });
   }
 });
 
@@ -95,7 +102,9 @@ router.delete("/:id", async (req, res) => {
 
     res.status(200).json({ success: true, data: deletedUser });
   } catch (error: any) {
-    res.status(500).json({ success: false, error: "Error => " + error.message });
+    res
+      .status(500)
+      .json({ success: false, error: "Error => " + error.message });
   }
 });
 

@@ -56,8 +56,13 @@ const handleLogout = () => {
           <Link to="/my-orders" className="hover:text-blue-500">
             My Orders
           </Link>
-          <Link to="/profile" className="hover:text-blue-500">
-            Profile
+         <Link to="/cart" className="relative hover:text-blue-500">
+            <ShoppingCart className="w-5 h-5" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-yellow-400 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
           </Link>
           <Link to="/contact" className="hover:text-blue-500">
             Contact
@@ -66,14 +71,7 @@ const handleLogout = () => {
             About
           </Link>
 
-          <Link to="/cart" className="relative hover:text-blue-500">
-            <ShoppingCart className="w-5 h-5" />
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-yellow-400 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+          
 
           <div className="relative" ref={dropdownRef}>
             <button
@@ -94,12 +92,7 @@ const handleLogout = () => {
                 >
                   Profile
                 </Link>
-                <Link
-                  to="/my-orders"
-                  className="block px-4 py-2 text-sm hover:bg-gray-100"
-                >
-                  My Orders
-                </Link>
+               
 
                 <button
                   onClick={handleLogout}

@@ -20,19 +20,23 @@ export default function AdminSidebar() {
   useEffect(() => {
     const fetchUnreadCount = async () => {
       try {
-        const res = await axios.get("/api/contacts/unread-count");
-        setUnreadCount(res.data.count || 0);
+        const res = await axios.get("http://localhost:5000/swiftshop/contacts/unread-count");
+        console.log("Unread count response:", res.data); //  Debug log for response
+        setUnreadCount(res.data.count || 0); // Adjust this if your backend sends 'data' instead of 'count'
       } catch (err) {
-        console.error("Failed to fetch unread count", err);
+        console.error("Failed to fetch unread count", err); //  Error log
       }
     };
 
     fetchUnreadCount();
   }, []);
 
+  //  Log on every render
+  console.log("Unread count (render):", unreadCount);
+
   const handleLogout = () => {
     logout();
-    window.location.href = "/"; // hard redirect to home and clear all state
+    window.location.href = "/";
   };
 
   const navItems = [
