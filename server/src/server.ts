@@ -42,5 +42,9 @@ app.use((req: Request, res: Response) => {
   res.status(404).json({ error: "Invalid path" });
 });
 
+
+app.use((req, res)=>{
+  res.send("API is running.....")
+})
 // Start server
 app.listen(PORT, () => console.log(` App is running on PORT ${PORT}...............`));
