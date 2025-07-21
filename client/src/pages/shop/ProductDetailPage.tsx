@@ -8,7 +8,7 @@ import Navbar from "../../components/navbar/Navbar";
 import LoggedInNavbar from "../../components/navbar/LoggedInNavbar";
 import Footer from "../../components/footer/Footer";
 import SimilarProductCard from "../../components/shop/SimilarProductCard";
-import type { Product, CartItem } from "../../types/Product";
+import type { Product, CartItem, ProductImage } from "../../types/Product";
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -111,7 +111,7 @@ export default function ProductDetailPage() {
 
       <main className="bg-gray-50 max-w-6xl mx-auto p-6 grid md:grid-cols-2 gap-10">
         <div className="space-y-4">
-          {product.image.map((img, i) => (
+          {(product.image as ProductImage[]).map((img, i) => (
             <img key={i} src={img} alt={product.name} className="w-full rounded-lg" />
           ))}
         </div>

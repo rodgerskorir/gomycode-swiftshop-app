@@ -6,7 +6,7 @@ export interface Product {
   description: string;
   price: number;
   discount: number;
-  image: string | string[];
+  image: ProductImage | ProductImage[];
   sizes: string[];
   inStock: boolean;
   numberOfStock: number;
@@ -15,6 +15,8 @@ export interface Product {
   quantity: number;
  
 }
+
+export type ProductImage = string;
 
 export interface CartItem extends Product {
   selectedSize?: string;

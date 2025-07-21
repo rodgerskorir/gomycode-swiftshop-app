@@ -29,7 +29,7 @@ export default function OrderDetailsPage() {
   const { user } = useContext(AuthContext);
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showLogin, setShowLogin] = useState(!user);
+  const [_, setShowLogin] = useState(!user);
 
   const API = import.meta.env.VITE_API_URL;
 
